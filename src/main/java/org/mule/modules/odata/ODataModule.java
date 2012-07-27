@@ -24,7 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
-import org.core4j.Enumerable;
+import org.apache.log4j.Logger;
 import org.mule.api.annotations.Configurable;
 import org.mule.api.annotations.Module;
 import org.mule.api.annotations.Processor;
@@ -45,40 +45,87 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.format.FormatType;
 
 /**
- * Generic module
- *
- * @author MuleSoft, Inc.
+ * Mule Module that provides the basic operations to consume
+ * an OData service.
+ *  
+ * @author mariano.gonzalez@mulesoft.com
  */
 @Module(name="odata", schemaVersion="1.0-SNAPSHOT")
 public class ODataModule {
 	
+	private static final Logger logger = Logger.getLogger(ODataModule.class);
+	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
+	
+	/***
+	 * The OData service root uri 
+	 */
 	@Configurable
 	private String baseServiceUri;
 	
+	/**
+	 * If the odata service requires authentication, set your username
+	 * in this attribute. Notice that setting this property but leaving the password
+	 * blank will result in an exception while initializing this module
+	 */
 	@Configurable
 	@Optional
 	private String username;
 	
+	/**
+	 * If the odata service requires authentication, set your password
+	 * in this attribute. Notice that setting this property but leaving the username
+	 * blank will result in an exception while initializing this module
+	 */
 	@Configurable
 	@Optional
 	private String password;
 	
+	/**
+	 * An instance of {@link org.mule.modules.odata.factory.ODataConsumerFactory}
+	 * to intanciate the {@link org.odata4j.consumer.ODataConsumer}. Normally you don't
+	 * need to set this unless you require some custom initialization of the consumer
+	 * or if you are doing test cases.
+	 * 
+	 * If this property is not specified, then an instance of
+	 * {@link org.mule.modules.odata.factory.ODataConsumerFactoryImpl.ODataConsumerFactoryImpl} is used 
+	 */
 	@Configurable
 	@Optional
 	private ODataConsumerFactory consumerFactory;
 	
+	/**
+	 * The consumer to use
+	 */
 	private ODataConsumer consumer;
 	
+	/**
+	 * The namig policy to be used when mapping pojo's attributes to OData entities.
+	 * Depending on the OData service you're consuming, you might find that attributes usually follows a
+	 * lower camel case format (e.g.: theAttribute) or an upper camel case format (e.g.: TheAttribute).
+	 * 
+	 * The naming format assumes that your pojo's properties follow the lower camel case
+	 * format (just as the java coding standard dictates) and translates to the format that the OData service
+	 * is expecting.
+	 * 
+	 * Valid values are: LOWER_CAMEL_CASE and UPPER_CAMEL_CASE.
+	 */
 	@Configurable
 	@Optional
 	@Default("LOWER_CAMEL_CASE")
 	private PropertyNamingFormat namingFormat = PropertyNamingFormat.LOWER_CAMEL_CASE;
 	
+	/**
+	 * The format of the payload to be used during communication.
+	 * Valid values are JSON and ATOM
+	 */
 	@Configurable
 	@Optional
 	@Default("JSON")
 	private FormatType formatType = FormatType.JSON;
 	
+	/**
+	 * This method initializes the module by creating the consumer and the factory (if needed)
+	 */
 	@Start
 	public void init() {
 		if (this.consumerFactory == null) {
@@ -89,16 +136,22 @@ public class ODataModule {
 	}
 
     /**
-     * Custom processor
+     * Reads entities from an specified set and returns it as a list of pojos
      *
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:my-processor}
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-as-pojos}
      *
-     * @param content Content to be processed
-     * @return Some string
+     * @param returnClass the canonical class name for the pojo instances to be returned
+     * @param entitySetName the name of the set to be read
+     * @param filter an OData filtering expression. If not provided, no filtering occurs (see http://www.odata.org/developers/protocols/uri-conventions#FilterSystemQueryOption)
+     * @param orderBy the ordering expression. If not provided, no ordering occurs (see http://www.odata.org/developers/protocols/uri-conventions#OrderBySystemQueryOption(
+     * @param skip number of items to skip, usefull for pagination. If not provided, no records are skept (see http://www.odata.org/developers/protocols/uri-conventions#SkipSystemQueryOption)
+     * @param top number of items to return (see http://www.odata.org/developers/protocols/uri-conventions#TopSystemQueryOption)
+     * @param select the selection clauses. If not specified, all fields are returned (see http://www.odata.org/developers/protocols/uri-conventions#SelectSystemQueryOption)
+     * @return a list of objects of class "returnClass" representing the obtained entities
      */
     @Processor
     @SuppressWarnings("unchecked")
-    public List<Object> getEntitiesAsPojos(
+    public List<Object> getAsPojos(
     						String returnClass,
     						String entitySetName,
     						@Optional String filter,
@@ -132,11 +185,20 @@ public class ODataModule {
     	return (List<Object>) request.execute().toList();
     }
     
+    /**
+     * Inserts an entity from an input pojo
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-from-pojo}
+     * 
+     * @param pojo an object representing the entity
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @return an instance of {@link org.odata4j.core.OEntity} representing the entity just created on the OData set
+     */
     @Processor
-    public OEntity createEntityFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName) {
+    public OEntity createFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName) {
     	OCreateRequest<OEntity> entity = this.consumer.createEntity(this.getEntitySetName(pojo, entitySetName));
     	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
-
+    	
 		if (properties != null) {
 			entity.properties(properties);
 		}
@@ -144,9 +206,48 @@ public class ODataModule {
 		return entity.execute();
     }
     
+    /**
+     * Inserts entities from an input list of pojos
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-from-pojos-list}
+     * 
+     * @param pojos a list of pojos representing the entities you want to create on the OData service
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @return a list with instances of {@link org.odata4j.core.OEntity} representing the entities just created on the OData set
+     */
     @Processor
-    public void updateEntityFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, Object keyValue) {
-    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(pojo, entitySetName), keyValue);
+    public List<OEntity> createFromPojosList(@Optional @Default("#[payload:}") List<Object> pojos, @Optional String entitySetName) {
+    	
+    	if (pojos == null || pojos.isEmpty()) {
+    		if (logger.isDebugEnabled()) {
+    			logger.debug("empty pojos list received, exiting without doing anything");
+    		}
+    		
+    		return Collections.emptyList();
+    	}
+    	
+    	entitySetName = this.getEntitySetName(pojos.get(0), entitySetName);
+    	
+    	List<OEntity> entities = new ArrayList<OEntity>(pojos.size());
+    	
+    	for (Object pojo : pojos) {
+    		entities.add(this.createFromPojo(pojo, entitySetName));
+    	}
+    	return entities;
+    }
+    
+    /**
+     * Updates an entity represented by a pojo on the OData service
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-from-pojo}
+     * 
+     * @param pojo an object representing the entity
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
+     */
+    @Processor
+    public void updateFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, String keyAttribute) {
+    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
     	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
 
 		if (properties != null) {
@@ -156,13 +257,36 @@ public class ODataModule {
 		request.execute();
     }
     
+    /**
+     * Deletes an entity represented by a pojo on the OData service
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-from-pojo}
+     * 
+     * @param pojo an object representing the entity
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
+     */
     @Processor
-    public void deleteEntity(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, String keyAttribute) {
-    	PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
-    	Object keyValue = null;
+    public void deleteFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, String keyAttribute) {
+    	this.consumer.deleteEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
+    }
+
+	private Object extractValue(Object pojo, String keyAttribute) {
+		assert pojo != null : "pojo cannot be null";
+		assert !StringUtils.isBlank(keyAttribute) : "ket attribute cannot be null";
+		
+		Object keyValue = null;
     	
-    	try {
-    		keyValue = propertyUtils.getProperty(propertyUtils, keyAttribute);
+		try {
+    		
+    		keyValue = propertyUtils.getProperty(pojo, this.namingFormat.toJava(keyAttribute));
+    		
+    		if (keyValue == null) {
+    			throw new IllegalStateException(String.format("the key attribute %s on pojo of class %s cannot be null", keyAttribute, pojo.getClass().getCanonicalName()));
+    		}
+    		
+    		return keyValue;
+    		
     	} catch (IllegalAccessException e) {
     		this.handleReadPropertyException(pojo, keyAttribute, e);
     	} catch (NoSuchMethodException e) {
@@ -170,9 +294,9 @@ public class ODataModule {
     	} catch (InvocationTargetException e) {
     		this.handleReadPropertyException(pojo, keyAttribute, e);
     	}
-    	
-    	this.consumer.deleteEntity(this.getEntitySetName(pojo, entitySetName), keyValue);
-    }
+		
+		return keyValue;
+	}
     
     private void handleReadPropertyException(Object pojo, String propertyName, Exception e) {
     	throw new RuntimeException(String.format("Could not read property %s on pojo of class %s", propertyName, pojo.getClass().getCanonicalName()), e);
@@ -211,7 +335,7 @@ public class ODataModule {
 				}
 			}
 		} catch (Exception e) {
-			
+			throw new RuntimeException(e);
 		}
 		
 		return result;

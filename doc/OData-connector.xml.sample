@@ -1,3 +1,15 @@
-<!-- BEGIN_INCLUDE(odata:my-processor) -->
-    <odata:my-processor content="#[map-payload:content]" />
-<!-- END_INCLUDE(odata:my-processor) -->
+<!-- BEGIN_INCLUDE(odata:get-as-pojos) -->
+    <odata:get-as-pojos returnClass="com.xyz.Product" filter="Price Gt 100" orderBy="Name" select="Name, Price" entitySetName="ProductSet" top="100" />
+<!-- END_INCLUDE(odata:get-as-pojos) -->
+<!-- BEGIN_INCLUDE(odata:create-from-pojo) -->
+    <odata:create-from-pojo entitySetName="ProductSet" />
+<!-- END_INCLUDE(odata:create-from-pojo) -->
+<!-- BEGIN_INCLUDE(odata:create-from-pojos-list) -->
+    <odata:create-from-pojos-list entitySetName="ProductSet" />
+<!-- END_INCLUDE(odata:create-from-pojos-list) -->
+<!-- BEGIN_INCLUDE(odata:update-from-pojo) -->
+    <odata:update-from-pojo entitySetName="ProductSet" keyAttribute="id"/>
+<!-- END_INCLUDE(odata:update-from-pojo) -->
+<!-- BEGIN_INCLUDE(odata:delete-from-pojo) -->
+    <odata:delete-from-pojo entitySetName="ProductSet" keyAttribute="id"/>
+<!-- END_INCLUDE(odata:delete-from-pojo) -->

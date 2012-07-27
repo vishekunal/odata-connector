@@ -1,3 +1,12 @@
+/**
+ *
+ * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
+ *
+ * The software in this package is published under the terms of the CPAL v1.0
+ * license, a copy of which has been included with this distribution in the
+ * LICENSE.txt file.
+ */
+
 package org.odata4j.consumer;
 
 import java.util.HashMap;
@@ -89,7 +98,7 @@ public class ODataClientRequest {
    * @return a new request builder
    */
   public static ODataClientRequest post(String url, Entry entry) {
-    return new ODataClientRequest("POST", url, null, null, entry);
+	  return new ODataClientRequest("POST", url, null, null, entry);
   }
 
   /**
