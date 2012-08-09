@@ -26,6 +26,7 @@ import java.util.Set;
 import org.core4j.Enumerable;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.odata4j.core.Guid;
 import org.odata4j.core.Throwables;
 
 /**
@@ -156,8 +157,8 @@ public class BeanModel {
     	
     	// if a joda time, make sure the pojo also expects a joda time
     	// otherwise try to set the value as a java.util.Date
+    	Class<?> argumentType = method.getParameterTypes()[0];
     	if (propertyValue instanceof LocalDateTime) {
-    		Class<?> argumentType = method.getParameterTypes()[0];
     		if (argumentType.isAssignableFrom(LocalDateTime.class)) {
     			method.invoke(target, propertyValue);
     			return;
@@ -166,7 +167,12 @@ public class BeanModel {
     			Date javaDate = new Date(jodaDate.toDateTime(DateTimeZone.UTC).getMillis());
     			method.invoke(target, javaDate);
     			return;
-    		}
+    		} 
+		} else if (propertyValue instanceof Guid) {
+			if (argumentType.isAssignableFrom(String.class)) {
+				Guid guid = (Guid) propertyValue;
+				propertyValue = guid.getValue();
+			}
     	}
       method.invoke(target, propertyValue);
     } catch (Exception e) {

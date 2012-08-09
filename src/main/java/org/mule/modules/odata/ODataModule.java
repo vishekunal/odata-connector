@@ -156,6 +156,7 @@ public class ODataModule {
     						String entitySetName,
     						@Optional String filter,
     						@Optional String orderBy,
+    						@Optional String expand,
     						@Optional Integer skip,
     						@Optional Integer top,
     						@Optional String select) {
@@ -172,6 +173,7 @@ public class ODataModule {
     	OQueryRequest<?> request =  this.consumer.getEntities(clazz, entitySetName)
 										.filter(filter)
 										.orderBy(orderBy)
+										.expand(expand)
 										.select(select);
     	
     	if (skip != null) {

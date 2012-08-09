@@ -191,29 +191,36 @@ public class InternalUtil {
       }
 
       for (OLink l : oe.getLinks()) {
-        if (l instanceof ORelatedEntitiesLinkInline) {
-          ORelatedEntitiesLinkInline ol = (ORelatedEntitiesLinkInline) l;
-          final String collectionName = ol.getTitle();
-          if (beanModel.canWrite(ol.getTitle())) {
-            Collection<Object> relatedEntities = ol
-                .getRelatedEntities() == null
-                ? null
-                : Enumerable.create(ol.getRelatedEntities())
-                    .select(new Func1<OEntity, Object>() {
-                      @Override
-                      public Object apply(OEntity input) {
-                        return toPojo(
-                            beanModel.getCollectionElementType(collectionName),
-                            input);
-                      }
-                    }).toList();
-            beanModel.setCollectionValue(rt, collectionName,
-                relatedEntities);
+          if (l instanceof ORelatedEntitiesLinkInline) {
+            ORelatedEntitiesLinkInline ol = (ORelatedEntitiesLinkInline) l;
+            final String collectionName = ol.getTitle();
+            if (beanModel.canWrite(ol.getTitle())) {
+              Collection<Object> relatedEntities = ol.getRelatedEntities() == null
+                  ? null
+                  : Enumerable.create(ol.getRelatedEntities())
+                      .select(new Func1<OEntity, Object>() {
+                        @Override
+                        public Object apply(OEntity input) {
+                          return toPojo(
+                              beanModel.getCollectionElementType(collectionName),
+                              input);
+                        }
+                      }).toList();
+              beanModel.setCollectionValue(rt, collectionName,
+                  relatedEntities);
+            }
+          } else if (l instanceof ORelatedEntityLink) {
+        	  ORelatedEntityLink ol = (ORelatedEntityLink) l;
+              final String propertyName = ol.getTitle();
+              if (beanModel.canWrite(ol.getTitle())) {
+            	  Object value = ol.getRelatedEntity();
+            	  if (value != null) {
+            		  beanModel.setPropertyValue(rt, propertyName, toPojo(beanModel.getPropertyType(propertyName), (OEntity) value));
+            	  }
+              }
+        	 
           }
-        } else if (l instanceof ORelatedEntityLink) {
-          // TODO set entity
         }
-      }
 
       return rt;
     } catch (Exception e) {
