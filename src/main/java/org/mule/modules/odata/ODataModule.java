@@ -18,15 +18,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.Module;
+import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.lifecycle.Start;
 import org.mule.api.annotations.param.Default;
@@ -35,13 +34,22 @@ import org.mule.modules.odata.factory.ODataConsumerFactory;
 import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
+import org.odata4j.core.OCollection;
+import org.odata4j.core.OCollections;
+import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OModifyRequest;
+import org.odata4j.core.OObject;
 import org.odata4j.core.OProperties;
 import org.odata4j.core.OProperty;
 import org.odata4j.core.OQueryRequest;
+import org.odata4j.core.OSimpleObjects;
+import org.odata4j.edm.EdmCollectionType;
+import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 
 /**
@@ -50,7 +58,7 @@ import org.odata4j.format.FormatType;
  *  
  * @author mariano.gonzalez@mulesoft.com
  */
-@Module(name="odata", schemaVersion="1.0-SNAPSHOT")
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData Connector", minMuleVersion = "3.3")
 public class ODataModule {
 	
 	private static final Logger logger = Logger.getLogger(ODataModule.class);
@@ -145,6 +153,7 @@ public class ODataModule {
      * @param filter an OData filtering expression. If not provided, no filtering occurs (see http://www.odata.org/developers/protocols/uri-conventions#FilterSystemQueryOption)
      * @param orderBy the ordering expression. If not provided, no ordering occurs (see http://www.odata.org/developers/protocols/uri-conventions#OrderBySystemQueryOption(
      * @param skip number of items to skip, usefull for pagination. If not provided, no records are skept (see http://www.odata.org/developers/protocols/uri-conventions#SkipSystemQueryOption)
+     * @param expand Sets the expand expressions.
      * @param top number of items to return (see http://www.odata.org/developers/protocols/uri-conventions#TopSystemQueryOption)
      * @param select the selection clauses. If not specified, all fields are returned (see http://www.odata.org/developers/protocols/uri-conventions#SelectSystemQueryOption)
      * @return a list of objects of class "returnClass" representing the obtained entities
@@ -197,7 +206,7 @@ public class ODataModule {
      * @return an instance of {@link org.odata4j.core.OEntity} representing the entity just created on the OData set
      */
     @Processor
-    public OEntity createFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName) {
+    public OEntity createFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName) {
     	OCreateRequest<OEntity> entity = this.consumer.createEntity(this.getEntitySetName(pojo, entitySetName));
     	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
     	
@@ -218,7 +227,7 @@ public class ODataModule {
      * @return a list with instances of {@link org.odata4j.core.OEntity} representing the entities just created on the OData set
      */
     @Processor
-    public List<OEntity> createFromPojosList(@Optional @Default("#[payload:}") List<Object> pojos, @Optional String entitySetName) {
+    public List<OEntity> createFromPojosList(@Optional @Default("#[payload}") List<Object> pojos, @Optional String entitySetName) {
     	
     	if (pojos == null || pojos.isEmpty()) {
     		if (logger.isDebugEnabled()) {
@@ -248,7 +257,7 @@ public class ODataModule {
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
-    public void updateFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, String keyAttribute) {
+    public void updateFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName, String keyAttribute) {
     	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
     	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
 
@@ -269,7 +278,7 @@ public class ODataModule {
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
-    public void deleteFromPojo(@Optional @Default("#[payload:]") Object pojo, @Optional String entitySetName, String keyAttribute) {
+    public void deleteFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName, String keyAttribute) {
     	this.consumer.deleteEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
     }
 
@@ -312,28 +321,22 @@ public class ODataModule {
     	return StringUtils.isBlank(entitySetName) ? pojo.getClass().getSimpleName() + "Set" : entitySetName; 
     }
      
-    private <T> Collection<OProperty<?>> populateODataProperties(T object) {
-		Map<String, PropertyDescriptor> properties = this.describe(object.getClass());
+    private <T> List<OProperty<?>> populateODataProperties(T object) {
+		Collection<PropertyDescriptor> properties = this.describe(object.getClass());
 		
 		if (properties.isEmpty()) {
 			return null;
 		}
 		
-		Collection<OProperty<?>> result = new ArrayList<OProperty<?>>(properties.size());
+		List<OProperty<?>> result = new ArrayList<OProperty<?>>(properties.size());
 		
 		try {
-			for (PropertyDescriptor prop : properties.values()) {
+			for (PropertyDescriptor prop : properties) {
 				Object value = prop.getReadMethod().invoke(object, (Object[]) null);
 				
 				if (value != null) {
-					
 					String key = this.namingFormat.toOData(prop.getName());
-					
-					if (value instanceof Guid) {
-						result.add(OProperties.guid(key, (Guid) value));
-					} else if (this.isSimpleType(value)) {
-						result.add(OProperties.simple(key, value));
-					}
+					result.add(this.toOProperty(key, value));
 				}
 			}
 		} catch (Exception e) {
@@ -343,7 +346,81 @@ public class ODataModule {
 		return result;
 	}
     
-	private <T> Map<String, PropertyDescriptor> describe(Class<T> clazz) {
+    private OProperty<?> toOProperty(String key, Object value) {
+    	
+    	if (value instanceof Guid) {
+			return OProperties.guid(key, (Guid) value);
+		} else if (this.isSimpleType(value)) {
+			return OProperties.simple(key, value);
+		} else if (value instanceof Date) {
+			return OProperties.datetime(key, (Date) value);
+		} else if (value instanceof Collection) {
+			Collection<?> collection = (Collection<?>) value;
+			if (collection != null && collection.size() > 0) {
+				return this.toCollectionProperty(key, collection);
+			}
+		} else {
+			return this.toObjectProperty(key, value);
+		}
+    	
+    	throw new IllegalArgumentException("Could not determine odata type for instance of class " + value.getClass().getCanonicalName());
+    }
+    
+    private OProperty<List<OProperty<?>>> toObjectProperty(String key, Object value) {
+    	return OProperties.complex(key, this.getEdmComplexType(key, value), this.populateODataProperties(value));
+    }
+    
+    private <T> OProperty<OCollection<? extends OObject>> toCollectionProperty(String key, Collection<T> collection) {
+		EdmCollectionType type = this.getCollectionType(key, collection);
+		OCollection.Builder<OObject> builder = OCollections.newBuilder(type);
+		EdmType itemType = null;
+		
+		for (T item : collection) {
+			
+			if (itemType == null) {
+				itemType = this.getEdmType(key, item);
+			}
+			
+			if (this.isSimpleType(item)) {
+				builder.add(OSimpleObjects.create(EdmSimpleType.forJavaType(item.getClass()), item));
+			} else {
+				builder.add(OComplexObjects.create(this.getEdmComplexType(key, item), this.populateODataProperties(item)));
+			}
+					
+		}
+		
+		return OProperties.collection(key, type, builder.build());
+    }
+    
+    private EdmType getEdmType(String key, Object value) {
+    	EdmType type = EdmSimpleType.forJavaType(value.getClass());
+    	return type != null ? type : this.getEdmComplexType(key, value);
+    }
+    
+    private EdmComplexType getEdmComplexType(String key, Object value) {
+    	return EdmComplexType.newBuilder().setName(key).build();
+    }
+    
+    private <T> EdmCollectionType getCollectionType(String key, Collection<T> collection) {
+    	T sample = null;
+    	
+    	for (T value : collection) {
+    		
+    		if (value != null) {
+    			sample = value;
+    			break;
+    		}
+    	}
+    	
+    	if (sample == null) {
+    		throw new IllegalArgumentException("Collection only had null values");
+    	}
+    	
+    	return new EdmCollectionType(CollectionKind.List, this.getEdmType(key, sample));
+    }
+    
+    
+	private <T> Collection<PropertyDescriptor> describe(Class<T> clazz) {
 		BeanInfo info = null;
 		try {
 			info = Introspector.getBeanInfo(clazz);
@@ -351,14 +428,14 @@ public class ODataModule {
 			throw new RuntimeException();
 		}
 		
-		Map<String, PropertyDescriptor> map = new HashMap<String, PropertyDescriptor>();
+		Collection<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>(info.getPropertyDescriptors().length);
 		for (PropertyDescriptor property : info.getPropertyDescriptors()) {
 			if (property.getReadMethod() != null && property.getWriteMethod() != null) {
-				map.put(property.getName(), property);
+				descriptors.add(property);
 			}
 		}
 		
-		return map;
+		return descriptors;
 	}
 	
 	private boolean isSimpleType(Object value) {
