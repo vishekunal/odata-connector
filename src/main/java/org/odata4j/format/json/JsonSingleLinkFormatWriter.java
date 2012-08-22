@@ -11,12 +11,13 @@ package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.format.SingleLink;
 
 public class JsonSingleLinkFormatWriter extends JsonFormatWriter<SingleLink> {
 
-  public JsonSingleLinkFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonSingleLinkFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

@@ -11,6 +11,7 @@ package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.producer.ComplexObjectResponse;
 
 /**
@@ -18,8 +19,8 @@ import org.odata4j.producer.ComplexObjectResponse;
  */
 public class JsonComplexObjectFormatWriter extends JsonFormatWriter<ComplexObjectResponse> {
 
-  public JsonComplexObjectFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonComplexObjectFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

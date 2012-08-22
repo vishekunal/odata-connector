@@ -11,14 +11,14 @@ package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 
 public class JsonServiceDocumentFormatWriter extends JsonFormatWriter<EdmDataServices> {
 
-  public JsonServiceDocumentFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
-
+  public JsonServiceDocumentFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

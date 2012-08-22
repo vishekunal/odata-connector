@@ -12,6 +12,7 @@ package org.odata4j.format.json;
 import javax.ws.rs.core.UriInfo;
 
 import org.odata4j.core.OCollection;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmType;
 import org.odata4j.producer.CollectionResponse;
 
@@ -20,8 +21,8 @@ import org.odata4j.producer.CollectionResponse;
  */
 public class JsonCollectionFormatWriter extends JsonFormatWriter<CollectionResponse<?>> {
 
-  public JsonCollectionFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonCollectionFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer;
 import org.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
@@ -28,8 +29,8 @@ public class ODataConsumerFactoryImpl implements ODataConsumerFactory {
 	 * @see org.mule.modules.odata.factory.ODataConsumerFactory#newConsumer(java.lang.String, org.odata4j.format.FormatType, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password) {
-		Builder builder = ODataJerseyConsumer.newBuilder(baseServiceUri).setFormatType(formatType);
+	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password, ODataVersion version) {
+		Builder builder = ODataJerseyConsumer.newBuilder(baseServiceUri, version).setFormatType(formatType);
 		OClientBehavior auth = this.getAuthBehaviour(username, password);
 		
 		if (auth != null) {

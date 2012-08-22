@@ -10,6 +10,7 @@
 package org.mule.modules.odata.factory;
 
 import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.format.FormatType;
 
 /**
@@ -19,6 +20,6 @@ import org.odata4j.format.FormatType;
  */
 public interface ODataConsumerFactory {
 	
-	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password);
+	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password, ODataVersion version);
 
 }

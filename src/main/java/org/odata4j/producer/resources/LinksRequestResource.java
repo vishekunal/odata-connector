@@ -26,6 +26,7 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.core4j.Enumerable;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntityId;
 import org.odata4j.core.OEntityIds;
 import org.odata4j.core.OEntityKey;
@@ -36,6 +37,7 @@ import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.SingleLinks;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.EntityIdResponse;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.exceptions.NotFoundException;
@@ -67,7 +69,7 @@ public class LinksRequestResource extends BaseResource {
 
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.createLink(sourceEntity, targetNavProp, newTargetEntity);
-    return noContent();
+    return noContent(InternalUtil.getDataServiceVersion(httpHeaders));
   }
 
   @PUT
@@ -80,10 +82,10 @@ public class LinksRequestResource extends BaseResource {
         targetEntityKey));
 
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
-
+    
     OEntityId newTargetEntity = parseRequestUri(httpHeaders, uriInfo, payload);
     producer.updateLink(sourceEntity, targetNavProp, targetEntityKey, newTargetEntity);
-    return noContent();
+    return noContent(InternalUtil.getDataServiceVersion(httpHeaders));
   }
 
   private OEntityId parseRequestUri(HttpHeaders httpHeaders, UriInfo uriInfo, String payload) {
@@ -92,8 +94,8 @@ public class LinksRequestResource extends BaseResource {
     return OEntityIds.parse(uriInfo.getBaseUri().toString(), link.getUri());
   }
 
-  private Response noContent() {
-    return Response.noContent().header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+  private Response noContent(ODataVersion version) {
+    return Response.noContent().header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString).build();
   }
 
   @DELETE
@@ -108,7 +110,7 @@ public class LinksRequestResource extends BaseResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     producer.deleteLink(sourceEntity, targetNavProp, targetEntityKey);
-    return noContent();
+    return noContent(InternalUtil.getDataServiceVersion(httpHeaders));
   }
 
   @GET
@@ -130,9 +132,11 @@ public class LinksRequestResource extends BaseResource {
     StringWriter sw = new StringWriter();
     String serviceRootUri = uriInfo.getBaseUri().toString();
     String contentType;
+    ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
+    
     if (response.getMultiplicity() == EdmMultiplicity.MANY) {
       SingleLinks links = SingleLinks.create(serviceRootUri, response.getEntities());
-      FormatWriter<SingleLinks> fw = FormatWriterFactory.getFormatWriter(SingleLinks.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+      FormatWriter<SingleLinks> fw = FormatWriterFactory.getFormatWriter(SingleLinks.class, httpHeaders.getAcceptableMediaTypes(), format, callback, version);
       fw.write(uriInfo, sw, links);
       contentType = fw.getContentType();
     } else {
@@ -141,14 +145,14 @@ public class LinksRequestResource extends BaseResource {
         throw new NotFoundException();
 
       SingleLink link = SingleLinks.create(serviceRootUri, entityId);
-      FormatWriter<SingleLink> fw = FormatWriterFactory.getFormatWriter(SingleLink.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+      FormatWriter<SingleLink> fw = FormatWriterFactory.getFormatWriter(SingleLink.class, httpHeaders.getAcceptableMediaTypes(), format, callback, version);
       fw.write(uriInfo, sw, link);
       contentType = fw.getContentType();
     }
 
     String entity = sw.toString();
 
-    return Response.ok(entity, contentType).header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+    return Response.ok(entity, contentType).header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString).build();
   }
 
 }

@@ -26,6 +26,7 @@ import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.edm.EdmFunctionParameter;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CollectionResponse;
 import org.odata4j.producer.ComplexObjectResponse;
@@ -76,7 +77,7 @@ public class FunctionResource extends BaseResource {
       return Response.status(Status.NO_CONTENT).build();
     }
 
-    ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+    ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
 
     StringWriter sw = new StringWriter();
     FormatWriter<?> fwBase;
@@ -88,7 +89,8 @@ public class FunctionResource extends BaseResource {
               ComplexObjectResponse.class,
               httpHeaders.getAcceptableMediaTypes(),
               format,
-              callback);
+              callback,
+              version);
 
       fw.write(uriInfo, sw, (ComplexObjectResponse) response);
       fwBase = fw;
@@ -98,7 +100,8 @@ public class FunctionResource extends BaseResource {
               CollectionResponse.class,
               httpHeaders.getAcceptableMediaTypes(),
               format,
-              callback);
+              callback,
+              version);
 
       fw.write(uriInfo, sw, (CollectionResponse<?>) response);
       fwBase = fw;

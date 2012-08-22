@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.ws.rs.core.HttpHeaders;
+
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
@@ -290,8 +292,12 @@ public class InternalUtil {
     }
   }
 
+  public static ODataVersion getDataServiceVersion(HttpHeaders httpHeaders) {
+	  return getDataServiceVersion(httpHeaders.getRequestHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+  }
+  
   public static ODataVersion getDataServiceVersion(String headerValue) {
-    ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+    ODataVersion version = ODataVersion.V1;
     if (headerValue != null) {
       String[] str = headerValue.split(";");
       version = ODataVersion.parse(str[0]);

@@ -22,9 +22,11 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.ODataProducer;
 
 @Path("")
@@ -42,13 +44,14 @@ public class ServiceDocumentResource {
     ODataProducer producer = producerResolver.getContext(ODataProducer.class);
 
     EdmDataServices metadata = producer.getMetadata();
-
+    ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
+    
     StringWriter w = new StringWriter();
-    FormatWriter<EdmDataServices> fw = FormatWriterFactory.getFormatWriter(EdmDataServices.class, httpHeaders.getAcceptableMediaTypes(), format, callback);
+    FormatWriter<EdmDataServices> fw = FormatWriterFactory.getFormatWriter(EdmDataServices.class, httpHeaders.getAcceptableMediaTypes(), format, callback, version);
     fw.write(uriInfo, w, metadata);
 
     return Response.ok(w.toString(), fw.getContentType())
-        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
         .build();
   }
 

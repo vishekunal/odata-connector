@@ -18,6 +18,7 @@ import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
 import org.odata4j.core.OCreateRequest;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;
 import org.odata4j.core.OEntityId;
@@ -44,16 +45,18 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
 
   private final Map<String, FeedCustomizationMapping> cachedMappings = new HashMap<String, FeedCustomizationMapping>();
   private final ODataJerseyClient client;
+  private ODataVersion version;
 
   private EdmDataServices cachedMetadata;
 
-  private ODataJerseyConsumer(FormatType type, String serviceRootUri, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
+  private ODataJerseyConsumer(FormatType type, String serviceRootUri, JerseyClientFactory clientFactory, ODataVersion version, OClientBehavior... behaviors) {
     super(serviceRootUri);
 
     if (!serviceRootUri.endsWith("/"))
       serviceRootUri = serviceRootUri + "/";
-
-    this.client = new ODataJerseyClient(type, clientFactory, behaviors);
+    
+    this.version = version;
+    this.client = new ODataJerseyClient(type, clientFactory, version, behaviors);
   }
 
   /**
@@ -65,9 +68,11 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     private String serviceRootUri;
     private JerseyClientFactory clientFactory;
     private OClientBehavior[] clientBehaviors;
+    private ODataVersion version;
 
-    private Builder(String serviceRootUri) {
+    private Builder(String serviceRootUri, ODataVersion version) {
       this.serviceRootUri = serviceRootUri;
+      this.version = version;
       this.formatType = FormatType.ATOM;
       this.clientFactory = DefaultJerseyClientFactory.INSTANCE;
     }
@@ -114,9 +119,9 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
      */
     public ODataJerseyConsumer build() {
       if (this.clientBehaviors != null)
-        return new ODataJerseyConsumer(this.formatType, this.serviceRootUri, this.clientFactory, this.clientBehaviors);
+        return new ODataJerseyConsumer(this.formatType, this.serviceRootUri, this.clientFactory, this.version, this.clientBehaviors);
       else
-        return new ODataJerseyConsumer(this.formatType, this.serviceRootUri, this.clientFactory);
+        return new ODataJerseyConsumer(this.formatType, this.serviceRootUri, this.clientFactory, this.version);
     }
   }
 
@@ -125,8 +130,8 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    *
    * @param serviceRootUri  the OData service root uri
    */
-  public static Builder newBuilder(String serviceRootUri) {
-    return new Builder(serviceRootUri);
+  public static Builder newBuilder(String serviceRootUri, ODataVersion version) {
+    return new Builder(serviceRootUri, version);
   }
 
   /**
@@ -135,10 +140,11 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * <p>Wrapper for {@code ODataConsumer.newBuilder(serviceRootUri).build()}.
    *
    * @param serviceRootUri  the service uri <p>e.g. <code>http://services.odata.org/Northwind/Northwind.svc/</code></p>
+   * @param version the OData protocol version to use
    * @return a new OData consumer
    */
-  public static ODataJerseyConsumer create(String serviceRootUri) {
-    return ODataJerseyConsumer.newBuilder(serviceRootUri).build();
+  public static ODataJerseyConsumer create(String serviceRootUri, ODataVersion version) {
+    return ODataJerseyConsumer.newBuilder(serviceRootUri, version).build();
   }
 
   /* (non-Javadoc)
@@ -177,7 +183,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
     return new ConsumerGetEntityRequest<T>(client,
         entityType, this.getServiceRootUri(), getMetadata(),
-        entitySetName, OEntityKey.create(key), mapping);
+        entitySetName, OEntityKey.create(key), mapping, this.version);
   }
 
   /* (non-Javadoc)

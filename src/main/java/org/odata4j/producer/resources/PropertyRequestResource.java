@@ -22,7 +22,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -77,6 +76,7 @@ public class PropertyRequestResource extends BaseResource {
     if (!"MERGE".equals(method)) {
 
       ODataProducer producer = producerResolver.getContext(ODataProducer.class);
+      ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
 
       // determine the expected entity set
       EdmDataServices metadata = producer.getMetadata();
@@ -97,7 +97,7 @@ public class PropertyRequestResource extends BaseResource {
       // get the FormatWriter for the accepted media types requested by client
       StringWriter sw = new StringWriter();
       FormatWriter<EntityResponse> fw = FormatWriterFactory
-          .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
+          .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null, InternalUtil.getDataServiceVersion(httpHeaders));
       fw.write(uriInfo, sw, response);
 
       // calculate the uri for the location header
@@ -110,7 +110,7 @@ public class PropertyRequestResource extends BaseResource {
           .ok(responseEntity, fw.getContentType())
           .status(Status.CREATED)
           .location(URI.create(entryId))
-          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString)
           .build();
     }
 
@@ -181,8 +181,7 @@ public class PropertyRequestResource extends BaseResource {
 
       String entity = Long.toString(response.getCount());
 
-      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-      ODataVersion version = ODataVersion.V2;
+      ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
 
       return Response
           .ok(entity, ODataConstants.TEXT_PLAIN_CHARSET_UTF8)
@@ -199,7 +198,7 @@ public class PropertyRequestResource extends BaseResource {
         throw new NotFoundException();
       }
 
-      ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+      ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
 
       StringWriter sw = new StringWriter();
       FormatWriter<?> fwBase;
@@ -209,7 +208,8 @@ public class PropertyRequestResource extends BaseResource {
                 PropertyResponse.class,
                 httpHeaders.getAcceptableMediaTypes(),
                 format,
-                callback);
+                callback,
+                version);
         fw.write(uriInfo, sw, (PropertyResponse) response);
         fwBase = fw;
       } else if (response instanceof EntityResponse) {
@@ -218,7 +218,8 @@ public class PropertyRequestResource extends BaseResource {
                 EntityResponse.class,
                 httpHeaders.getAcceptableMediaTypes(),
                 format,
-                callback);
+                callback,
+                version);
         fw.write(uriInfo, sw, (EntityResponse) response);
         fwBase = fw;
       } else if (response instanceof EntitiesResponse) {
@@ -227,14 +228,11 @@ public class PropertyRequestResource extends BaseResource {
                 EntitiesResponse.class,
                 httpHeaders.getAcceptableMediaTypes(),
                 format,
-                callback);
+                callback,
+                version);
         fw.write(uriInfo, sw, (EntitiesResponse) response);
         fwBase = fw;
 
-        // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-        // the JsonWriter writes feed currently always as Version 2.0
-        version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-            ? ODataVersion.V2 : ODataVersion.V2;
       } else {
         throw new NotImplementedException("Unknown BaseResponse type: " + response.getClass().getName());
       }

@@ -283,8 +283,10 @@ public class JsonFormatParser {
         } while (!event.isEndArray());
         entry.links.add(OLinks.relatedEntitiesInline(name, name, entry.getUri() + "/" + name,
             entities));
+      } else if (event.isEndArray()) {
+    	  // do nothing, empty array
       } else {
-        throw new IllegalArgumentException("What's that?");
+    	  throw new IllegalArgumentException("What's that?");
       }
 
       ensureEndProperty(jsr.nextEvent());
@@ -325,11 +327,9 @@ public class JsonFormatParser {
       // "results" :
     } else if (RESULTS_PROPERTY.equals(event.asStartProperty().getName())) {
 
-      // if we support V1, put this in again
-      /*
       if (version == ODataVersion.V1) {
         throw new IllegalArgumentException("no valid OData JSON format results not expected");
-      }*/
+      }
 
       // inlined feed or a collection property
       EdmNavigationProperty navProp = entry.getEntityType().findNavigationProperty(name);

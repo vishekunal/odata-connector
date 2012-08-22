@@ -23,6 +23,7 @@ import org.odata4j.core.Guid;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OComplexObject;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OLink;
 import org.odata4j.core.OObject;
@@ -55,6 +56,7 @@ import org.odata4j.repack.org.apache.commons.codec.binary.Base64;
 public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   private final String jsonpCallback;
+  private ODataVersion version;
 
   /**
    * Creates a new JSON writer.
@@ -62,8 +64,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
    * @param jsonpCallback a function to call on the javascript side to act
    * on the data provided in the content.
    */
-  public JsonFormatWriter(String jsonpCallback) {
+  public JsonFormatWriter(String jsonpCallback, ODataVersion version) {
     this.jsonpCallback = jsonpCallback;
+    this.version = version;
   }
 
   /**
@@ -84,6 +87,10 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   protected String getJsonpCallback() {
     return jsonpCallback;
+  }
+  
+  protected ODataVersion getVersion() {
+	return version;
   }
 
   @Override
@@ -110,6 +117,16 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
   protected void writeProperty(JsonWriter jw, OProperty<?> prop) {
     jw.writeName(prop.getName());
     writeValue(jw, prop.getType(), prop.getValue());
+  }
+  
+  protected void maybeWriteResultsProperty(JsonWriter jw) {
+	  if (this.isV2OrGreater()) {
+		  jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
+	  }
+  }
+  
+  protected boolean isV2OrGreater() {
+	  return this.getVersion().isVersionGreaterThan(ODataVersion.V1);
   }
 
   @SuppressWarnings("unchecked")
@@ -166,9 +183,9 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   @SuppressWarnings("rawtypes")
   protected void writeCollection(JsonWriter jw, EdmCollectionType type, OCollection<? extends OObject> coll) {
-    jw.startObject();
+//    jw.startObject();
     {
-      jw.writeName("results");
+      this.maybeWriteResultsProperty(jw);
 
       jw.startArray();
       {
@@ -199,7 +216,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
       }
       jw.endArray();
     }
-    jw.endObject();
+//    jw.endObject();
   }
 
   protected void writeComplexObject(JsonWriter jw, String fullyQualifiedTypeName, List<OProperty<?>> props) {
@@ -272,9 +289,8 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
     if (link.isInline()) {
       if (link.isCollection()) {
 
-        // the version check will only make sense when this library properly
-        // supports version negotiation.  For now we write v2 only
-        if (true) { //  || ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
+    	boolean isV2OrGreater = this.isV2OrGreater();
+        if (isV2OrGreater) {
           jw.startObject();
           jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
         }
@@ -298,8 +314,7 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
         }
         jw.endArray();
 
-        // maybe later
-        if (true) { // ODataVersion.isVersionGreaterThan(settings.version, ODataVersion.V1)) {
+        if (isV2OrGreater) {
           jw.endObject();
         }
 

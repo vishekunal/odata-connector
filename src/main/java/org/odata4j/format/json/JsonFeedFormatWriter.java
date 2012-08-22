@@ -12,6 +12,7 @@ package org.odata4j.format.json;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.producer.EntitiesResponse;
 
@@ -20,8 +21,8 @@ import org.odata4j.producer.EntitiesResponse;
  */
 public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
-  public JsonFeedFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonFeedFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override
@@ -29,7 +30,7 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
     jw.startObject();
     {
-      jw.writeName("results");
+      this.maybeWriteResultsProperty(jw);
 
       jw.startArray();
       {

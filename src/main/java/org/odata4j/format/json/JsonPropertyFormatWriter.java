@@ -11,12 +11,13 @@ package org.odata4j.format.json;
 
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.producer.PropertyResponse;
 
 public class JsonPropertyFormatWriter extends JsonFormatWriter<PropertyResponse> {
 
-  public JsonPropertyFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonPropertyFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

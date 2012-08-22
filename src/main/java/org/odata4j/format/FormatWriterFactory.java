@@ -13,6 +13,7 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.json.JsonCollectionFormatWriter;
 import org.odata4j.format.json.JsonComplexObjectFormatWriter;
@@ -41,27 +42,27 @@ public class FormatWriterFactory {
 
   private static interface FormatWriters {
 
-    FormatWriter<EdmDataServices> getServiceDocumentFormatWriter();
+    FormatWriter<EdmDataServices> getServiceDocumentFormatWriter(ODataVersion version);
 
-    FormatWriter<EntitiesResponse> getFeedFormatWriter();
+    FormatWriter<EntitiesResponse> getFeedFormatWriter(ODataVersion version);
 
-    FormatWriter<EntityResponse> getEntryFormatWriter();
+    FormatWriter<EntityResponse> getEntryFormatWriter(ODataVersion version);
 
-    FormatWriter<PropertyResponse> getPropertyFormatWriter();
+    FormatWriter<PropertyResponse> getPropertyFormatWriter(ODataVersion version);
 
-    FormatWriter<Entry> getRequestEntryFormatWriter();
+    FormatWriter<Entry> getRequestEntryFormatWriter(ODataVersion version);
 
-    FormatWriter<SingleLink> getSingleLinkFormatWriter();
+    FormatWriter<SingleLink> getSingleLinkFormatWriter(ODataVersion version);
 
-    FormatWriter<SingleLinks> getSingleLinksFormatWriter();
+    FormatWriter<SingleLinks> getSingleLinksFormatWriter(ODataVersion version);
 
-    FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter();
+    FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter(ODataVersion version);
 
-    FormatWriter<CollectionResponse<?>> getCollectionFormatWriter();
+    FormatWriter<CollectionResponse<?>> getCollectionFormatWriter(ODataVersion version);
   }
 
   @SuppressWarnings("unchecked")
-  public static <T> FormatWriter<T> getFormatWriter(Class<T> targetType, List<MediaType> acceptTypes, String format, String callback) {
+  public static <T> FormatWriter<T> getFormatWriter(Class<T> targetType, List<MediaType> acceptTypes, String format, String callback, ODataVersion version) {
 
     FormatType type = null;
 
@@ -86,32 +87,32 @@ public class FormatWriterFactory {
     FormatWriters formatWriters = type.equals(FormatType.JSON) ? new JsonWriters(callback) : new AtomWriters();
 
     if (targetType.equals(EdmDataServices.class))
-      return (FormatWriter<T>) formatWriters.getServiceDocumentFormatWriter();
+      return (FormatWriter<T>) formatWriters.getServiceDocumentFormatWriter(version);
 
     if (targetType.equals(EntitiesResponse.class))
-      return (FormatWriter<T>) formatWriters.getFeedFormatWriter();
+      return (FormatWriter<T>) formatWriters.getFeedFormatWriter(version);
 
     if (targetType.equals(EntityResponse.class))
-      return (FormatWriter<T>) formatWriters.getEntryFormatWriter();
+      return (FormatWriter<T>) formatWriters.getEntryFormatWriter(version);
 
     if (targetType.equals(PropertyResponse.class))
-      return (FormatWriter<T>) formatWriters.getPropertyFormatWriter();
+      return (FormatWriter<T>) formatWriters.getPropertyFormatWriter(version);
 
     if (Entry.class.isAssignableFrom(targetType))
-      return (FormatWriter<T>) formatWriters.getRequestEntryFormatWriter();
+      return (FormatWriter<T>) formatWriters.getRequestEntryFormatWriter(version);
 
     if (SingleLink.class.isAssignableFrom(targetType))
-      return (FormatWriter<T>) formatWriters.getSingleLinkFormatWriter();
+      return (FormatWriter<T>) formatWriters.getSingleLinkFormatWriter(version);
 
     if (SingleLinks.class.isAssignableFrom(targetType))
-      return (FormatWriter<T>) formatWriters.getSingleLinksFormatWriter();
+      return (FormatWriter<T>) formatWriters.getSingleLinksFormatWriter(version);
 
     if (targetType.equals(ComplexObjectResponse.class)) {
-      return (FormatWriter<T>) formatWriters.getComplexObjectFormatWriter();
+      return (FormatWriter<T>) formatWriters.getComplexObjectFormatWriter(version);
     }
 
     if (targetType.equals(CollectionResponse.class)) {
-      return (FormatWriter<T>) formatWriters.getCollectionFormatWriter();
+      return (FormatWriter<T>) formatWriters.getCollectionFormatWriter(version);
     }
 
     throw new IllegalArgumentException("Unable to locate format writer for " + targetType.getName() + " and format " + type);
@@ -127,95 +128,95 @@ public class FormatWriterFactory {
     }
 
     @Override
-    public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter() {
-      return new JsonServiceDocumentFormatWriter(callback);
+    public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter(ODataVersion version) {
+      return new JsonServiceDocumentFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<EntitiesResponse> getFeedFormatWriter() {
-      return new JsonFeedFormatWriter(callback);
+    public FormatWriter<EntitiesResponse> getFeedFormatWriter(ODataVersion version) {
+      return new JsonFeedFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<EntityResponse> getEntryFormatWriter() {
-      return new JsonEntryFormatWriter(callback);
+    public FormatWriter<EntityResponse> getEntryFormatWriter(ODataVersion version) {
+      return new JsonEntryFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
-      return new JsonPropertyFormatWriter(callback);
+    public FormatWriter<PropertyResponse> getPropertyFormatWriter(ODataVersion version) {
+      return new JsonPropertyFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<Entry> getRequestEntryFormatWriter() {
-      return new JsonRequestEntryFormatWriter(callback);
+    public FormatWriter<Entry> getRequestEntryFormatWriter(ODataVersion version) {
+      return new JsonRequestEntryFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<SingleLink> getSingleLinkFormatWriter() {
-      return new JsonSingleLinkFormatWriter(callback);
+    public FormatWriter<SingleLink> getSingleLinkFormatWriter(ODataVersion version) {
+      return new JsonSingleLinkFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<SingleLinks> getSingleLinksFormatWriter() {
-      return new JsonSingleLinksFormatWriter(callback);
+    public FormatWriter<SingleLinks> getSingleLinksFormatWriter(ODataVersion version) {
+      return new JsonSingleLinksFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter() {
-      return new JsonComplexObjectFormatWriter(callback);
+    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter(ODataVersion version) {
+      return new JsonComplexObjectFormatWriter(callback, version);
     }
 
     @Override
-    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
-      return new JsonCollectionFormatWriter(callback);
+    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter(ODataVersion version) {
+      return new JsonCollectionFormatWriter(callback, version);
     }
   }
 
   public static class AtomWriters implements FormatWriters {
 
     @Override
-    public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter() {
+    public FormatWriter<EdmDataServices> getServiceDocumentFormatWriter(ODataVersion version) {
       return new AtomServiceDocumentFormatWriter();
     }
 
     @Override
-    public FormatWriter<EntitiesResponse> getFeedFormatWriter() {
+    public FormatWriter<EntitiesResponse> getFeedFormatWriter(ODataVersion version) {
       return new AtomFeedFormatWriter();
     }
 
     @Override
-    public FormatWriter<EntityResponse> getEntryFormatWriter() {
+    public FormatWriter<EntityResponse> getEntryFormatWriter(ODataVersion version) {
       return new AtomEntryFormatWriter();
     }
 
     @Override
-    public FormatWriter<PropertyResponse> getPropertyFormatWriter() {
+    public FormatWriter<PropertyResponse> getPropertyFormatWriter(ODataVersion version) {
       return new XmlPropertyFormatWriter();
     }
 
     @Override
-    public FormatWriter<Entry> getRequestEntryFormatWriter() {
+    public FormatWriter<Entry> getRequestEntryFormatWriter(ODataVersion version) {
       return new AtomRequestEntryFormatWriter();
     }
 
     @Override
-    public FormatWriter<SingleLink> getSingleLinkFormatWriter() {
+    public FormatWriter<SingleLink> getSingleLinkFormatWriter(ODataVersion version) {
       return new AtomSingleLinkFormatWriter();
     }
 
     @Override
-    public FormatWriter<SingleLinks> getSingleLinksFormatWriter() {
+    public FormatWriter<SingleLinks> getSingleLinksFormatWriter(ODataVersion version) {
       return new AtomSingleLinksFormatWriter();
     }
 
     @Override
-    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter() {
+    public FormatWriter<ComplexObjectResponse> getComplexObjectFormatWriter(ODataVersion version) {
       throw new NotImplementedException();
     }
 
     @Override
-    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter() {
+    public FormatWriter<CollectionResponse<?>> getCollectionFormatWriter(ODataVersion version) {
       throw new NotImplementedException();
     }
 

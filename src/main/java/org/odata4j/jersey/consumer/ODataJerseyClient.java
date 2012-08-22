@@ -29,6 +29,7 @@ import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.consumer.behaviors.OClientBehaviors;
 import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntities;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityKey;
@@ -60,13 +61,15 @@ class ODataJerseyClient extends AbstractODataClient {
 
   private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") }; // jersey hates MERGE, tunnel through POST
   private final OClientBehavior[] behaviors;
+  private final ODataVersion version;
 
   private final Client client;
 
-  public ODataJerseyClient(FormatType type, JerseyClientFactory clientFactory, OClientBehavior... behaviors) {
+  public ODataJerseyClient(FormatType type, JerseyClientFactory clientFactory, ODataVersion version, OClientBehavior... behaviors) {
     super(type);
     this.behaviors = Enumerable.create(requiredBehaviors).concat(Enumerable.create(behaviors)).toArray(OClientBehavior.class);
     this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
+    this.version = version;
   }
 
   public EdmDataServices getMetadata(ODataClientRequest request) {
@@ -202,7 +205,7 @@ class ODataJerseyClient extends AbstractODataClient {
 
       StringWriter sw = new StringWriter();
       FormatWriter<Object> fw = (FormatWriter<Object>) (Object)
-          FormatWriterFactory.getFormatWriter(payloadClass, null, this.getFormatType().toString(), null);
+          FormatWriterFactory.getFormatWriter(payloadClass, null, this.getFormatType().toString(), null, this.version);
       fw.write(null, sw, request.getPayload());
 
       String entity = sw.toString();
@@ -240,6 +243,13 @@ class ODataJerseyClient extends AbstractODataClient {
     }
 
     InputStream textEntity = response.getEntityInputStream();
+//    try {
+//    	String text = org.apache.commons.io.IOUtils.toString(response.getEntityInputStream());
+//    	FileUtils.writeStringToFile(new File("/Users/marianogonzalez/Desktop/result.json"), text);
+//    } catch (Exception e) {
+//    	throw new RuntimeException("chupala", e);
+//    }
+    
     try {
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));
     } catch (Exception e) {

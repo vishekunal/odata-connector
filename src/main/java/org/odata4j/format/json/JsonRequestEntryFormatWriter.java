@@ -14,12 +14,13 @@ import java.io.Writer;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.odata4j.core.ODataVersion;
 import org.odata4j.format.Entry;
 
 public class JsonRequestEntryFormatWriter extends JsonFormatWriter<Entry> {
 
-  public JsonRequestEntryFormatWriter(String jsonpCallback) {
-    super(jsonpCallback);
+  public JsonRequestEntryFormatWriter(String jsonpCallback, ODataVersion version) {
+    super(jsonpCallback, version);
   }
 
   @Override

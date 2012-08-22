@@ -38,6 +38,7 @@ import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObjects;
 import org.odata4j.core.OCreateRequest;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OModifyRequest;
 import org.odata4j.core.OObject;
@@ -102,6 +103,14 @@ public class ODataModule {
 	private ODataConsumerFactory consumerFactory;
 	
 	/**
+	 * The protocol version to be used when consuming external services
+	 */
+	@Configurable
+	@Optional
+	@Default("V2")
+	private ODataVersion consumerVersion = ODataVersion.V2 ;
+	
+	/**
 	 * The consumer to use
 	 */
 	private ODataConsumer consumer;
@@ -140,7 +149,7 @@ public class ODataModule {
 			this.consumerFactory = new ODataConsumerFactoryImpl();
 		}
 		
-		this.consumer = this.consumerFactory.newConsumer(this.baseServiceUri, this.formatType, this.username, this.password);
+		this.consumer = this.consumerFactory.newConsumer(this.baseServiceUri, this.formatType, this.username, this.password, this.consumerVersion);
 	}
 
     /**
@@ -501,5 +510,12 @@ public class ODataModule {
 	public void setFormatType(FormatType formatType) {
 		this.formatType = formatType;
 	}
-	
+
+	public ODataVersion getConsumerVersion() {
+		return consumerVersion;
+	}
+
+	public void setConsumerVersion(ODataVersion consumerVersion) {
+		this.consumerVersion = consumerVersion;
+	}
 }

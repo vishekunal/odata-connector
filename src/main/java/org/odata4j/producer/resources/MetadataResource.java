@@ -27,6 +27,7 @@ import org.odata4j.core.ODataConstants;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.xml.EdmxFormatWriter;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.edm.MetadataProducer;
 import org.odata4j.producer.exceptions.NotImplementedException;
@@ -64,7 +65,7 @@ public class MetadataResource {
       EdmxFormatWriter.write(s, w);
 
       return Response.ok(w.toString(), ODataConstants.APPLICATION_XML_CHARSET_UTF8)
-          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, ODataConstants.DATA_SERVICE_VERSION_HEADER)
+          .header(ODataConstants.Headers.DATA_SERVICE_VERSION, InternalUtil.getDataServiceVersion(httpHeaders).asString)
           .build();
     }
   }

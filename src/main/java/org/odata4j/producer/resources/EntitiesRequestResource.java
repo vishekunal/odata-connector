@@ -23,7 +23,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -68,9 +67,9 @@ public class EntitiesRequestResource extends BaseResource {
     OEntity entity = this.getRequestEntity(httpHeaders, uriInfo, payload, producer.getMetadata(), entitySetName, null);
 
     EntityResponse response = producer.createEntity(entitySetName, entity);
-
+    ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
     FormatWriter<EntityResponse> writer = FormatWriterFactory
-        .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null);
+        .getFormatWriter(EntityResponse.class, httpHeaders.getAcceptableMediaTypes(), null, null, version);
     StringWriter sw = new StringWriter();
     writer.write(uriInfo, sw, response);
 
@@ -83,8 +82,7 @@ public class EntitiesRequestResource extends BaseResource {
         .ok(responseEntity, writer.getContentType())
         .status(Status.CREATED)
         .location(URI.create(entryId))
-        .header(ODataConstants.Headers.DATA_SERVICE_VERSION,
-            ODataConstants.DATA_SERVICE_VERSION_HEADER).build();
+        .header(ODataConstants.Headers.DATA_SERVICE_VERSION, version.asString).build();
   }
 
   @GET
@@ -242,13 +240,12 @@ public class EntitiesRequestResource extends BaseResource {
         OptionsQueryParser.parseSelect(select));
 
     Response response = null;
+    ODataVersion version = InternalUtil.getDataServiceVersion(httpHeaders);
+    
     if (isCount) {
       CountResponse countResponse = producer.getEntitiesCount(entitySetName, query);
 
       String entity = Long.toString(countResponse.getCount());
-
-      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-      ODataVersion version = ODataVersion.V2;
 
       response = Response
           .ok(entity, ODataConstants.TEXT_PLAIN_CHARSET_UTF8)
@@ -264,14 +261,12 @@ public class EntitiesRequestResource extends BaseResource {
               EntitiesResponse.class,
               httpHeaders.getAcceptableMediaTypes(),
               format,
-              callback);
+              callback,
+              version
+              );
 
       fw.write(uriInfo, sw, entitiesResponse);
       String entity = sw.toString();
-
-      // TODO remove this hack, check whether we are Version 2.0 compatible anyway
-      ODataVersion version = MediaType.valueOf(fw.getContentType()).isCompatible(MediaType.APPLICATION_JSON_TYPE)
-          ? ODataVersion.V2 : ODataVersion.V2;
 
       response = Response
           .ok(entity, fw.getContentType())
@@ -294,8 +289,7 @@ public class EntitiesRequestResource extends BaseResource {
 
     EntityRequestResource er = new EntityRequestResource();
 
-    String changesetBoundary = "changesetresponse_"
-        + Guid.randomGuid().toString();
+    String changesetBoundary = "changesetresponse_" + Guid.randomGuid().toString();
     String batchBoundary = "batchresponse_" + Guid.randomGuid().toString();
     StringBuilder batchResponse = new StringBuilder("\n--");
     batchResponse.append(batchBoundary);
@@ -328,7 +322,7 @@ public class EntitiesRequestResource extends BaseResource {
             entityId, entity);
         break;
       case DELETE:
-        response = er.deleteEntity(producerResolver, entitySetName, entityId);
+        response = er.deleteEntity(producerResolver, httpHeaders, entitySetName, entityId);
         break;
       case GET:
         throw new UnsupportedOperationException("Not supported yet.");
@@ -351,7 +345,7 @@ public class EntitiesRequestResource extends BaseResource {
         .type(ODataBatchProvider.MULTIPART_MIXED + ";boundary="
             + batchBoundary).header(
             ODataConstants.Headers.DATA_SERVICE_VERSION,
-            ODataConstants.DATA_SERVICE_VERSION_HEADER)
+            InternalUtil.getDataServiceVersion(headers).asString)
         .entity(batchResponse.toString()).build();
   }
 

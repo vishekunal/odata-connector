@@ -68,8 +68,7 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
     ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
     ClientResponse response = client.createEntity(request);
 
-    ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders()
-        .getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+    ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
     FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
         client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));

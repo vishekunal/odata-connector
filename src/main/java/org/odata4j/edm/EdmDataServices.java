@@ -15,7 +15,6 @@ import java.util.List;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.core.ImmutableList;
-import org.odata4j.core.ODataConstants;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OPredicates;
 import org.odata4j.core.PrefixedNamespace;
@@ -229,7 +228,7 @@ public class EdmDataServices {
   /** Mutable builder for {@link EdmDataServices} objects. */
   public static class Builder {
 
-    private ODataVersion version = ODataConstants.DATA_SERVICE_VERSION;
+    private ODataVersion version = ODataVersion.V1;
     private final List<EdmSchema.Builder> schemas = new ArrayList<EdmSchema.Builder>();
     private final List<PrefixedNamespace> namespaces = new ArrayList<PrefixedNamespace>();
 

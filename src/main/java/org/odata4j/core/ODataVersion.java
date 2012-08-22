@@ -43,14 +43,14 @@ public enum ODataVersion {
     }
   }
 
-  /** Returns true if the version v is greater than the target version */
-  public static boolean isVersionGreaterThan(ODataVersion v, ODataVersion target) {
-    return v.compareTo(target) > 0;
+  /** Returns true if the version this is greater than the target version */
+  public boolean isVersionGreaterThan(ODataVersion target) {
+    return this.compareTo(target) > 0;
   }
 
-  /** Returns true if the version v is greater than or equal to the target version */
-  public static boolean isVersionGreaterThanOrEqualTo(ODataVersion v, ODataVersion target) {
-    return v.compareTo(target) >= 0;
+  /** Returns true if the version this is greater than or equal to the target version */
+  public boolean isVersionGreaterThanOrEqualTo(ODataVersion target) {
+    return this.compareTo(target) >= 0;
   }
 
 }
