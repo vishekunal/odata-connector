@@ -243,12 +243,6 @@ class ODataJerseyClient extends AbstractODataClient {
     }
 
     InputStream textEntity = response.getEntityInputStream();
-//    try {
-//    	String text = org.apache.commons.io.IOUtils.toString(response.getEntityInputStream());
-//    	FileUtils.writeStringToFile(new File("/Users/marianogonzalez/Desktop/result.json"), text);
-//    } catch (Exception e) {
-//    	throw new RuntimeException("chupala", e);
-//    }
     
     try {
       return new BOMWorkaroundReader(new InputStreamReader(textEntity, "UTF-8"));

@@ -27,10 +27,12 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
 
   @Override
   public void writeContent(UriInfo uriInfo, JsonWriter jw, EntitiesResponse target) {
-
-    jw.startObject();
-    {
-      this.maybeWriteResultsProperty(jw);
+	boolean isV2OrGreater = this.isV2OrGreater();
+	
+	if (isV2OrGreater) {
+		jw.startObject();
+		jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
+	}
 
       jw.startArray();
       {
@@ -81,8 +83,10 @@ public class JsonFeedFormatWriter extends JsonFormatWriter<EntitiesResponse> {
         jw.writeName("__next");
         jw.writeString(nextHref);
       }
-    }
-    jw.endObject();
+      
+      if (isV2OrGreater) {
+    	  jw.endObject();
+      }
   }
 }
 

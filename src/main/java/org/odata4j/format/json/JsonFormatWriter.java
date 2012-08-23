@@ -183,9 +183,12 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
   @SuppressWarnings("rawtypes")
   protected void writeCollection(JsonWriter jw, EdmCollectionType type, OCollection<? extends OObject> coll) {
-//    jw.startObject();
-    {
-      this.maybeWriteResultsProperty(jw);
+	  boolean isV2OrGreater = this.isV2OrGreater();
+	  
+	  if (isV2OrGreater) {
+	      jw.startObject();
+	      jw.writeName(JsonFormatParser.RESULTS_PROPERTY);
+	  }
 
       jw.startArray();
       {
@@ -215,8 +218,10 @@ public abstract class JsonFormatWriter<T> implements FormatWriter<T> {
 
       }
       jw.endArray();
-    }
-//    jw.endObject();
+      
+      if (isV2OrGreater) {
+	    jw.endObject();
+      }
   }
 
   protected void writeComplexObject(JsonWriter jw, String fullyQualifiedTypeName, List<OProperty<?>> props) {

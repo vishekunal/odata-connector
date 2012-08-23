@@ -23,19 +23,23 @@ public class JsonSingleLinksFormatWriter extends JsonFormatWriter<SingleLinks> {
 
   @Override
   protected void writeContent(UriInfo uriInfo, JsonWriter jw, SingleLinks links) {
-    jw.startObject();
-    {
-    	
-    	this.maybeWriteResultsProperty(jw);
-    	
-    	jw.startArray();
-    	for (SingleLink link : links) {
-    		JsonSingleLinkFormatWriter.writeUri(jw, link);
-    	}
-    	
-    	jw.endArray();
+    boolean isV2OrGreater = this.isV2OrGreater();
+    
+    if (isV2OrGreater) {
+    	jw.startObject();
+    	jw.writeName(JsonFormatParser.RESULTS_PROPERTY);    	
     }
-    jw.endObject();
+    	
+	jw.startArray();
+	for (SingleLink link : links) {
+		JsonSingleLinkFormatWriter.writeUri(jw, link);
+	}
+	
+	jw.endArray();
+	
+	if (isV2OrGreater) {
+		jw.endObject();
+	}
   }
 
 }
