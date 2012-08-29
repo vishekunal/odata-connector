@@ -60,9 +60,9 @@ import org.odata4j.format.FormatType;
  * @author mariano.gonzalez@mulesoft.com
  */
 @Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData Connector", minMuleVersion = "3.3")
-public class ODataModule {
+public class ODataConnector {
 	
-	private static final Logger logger = Logger.getLogger(ODataModule.class);
+	private static final Logger logger = Logger.getLogger(ODataConnector.class);
 	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
 	
 	/***
@@ -345,7 +345,11 @@ public class ODataModule {
 				
 				if (value != null) {
 					String key = this.namingFormat.toOData(prop.getName());
-					result.add(this.toOProperty(key, value));
+					OProperty<?> property = this.toOProperty(key, value);
+					
+					if (property != null) {
+						result.add(property);
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -365,14 +369,10 @@ public class ODataModule {
 			return OProperties.datetime(key, (Date) value);
 		} else if (value instanceof Collection) {
 			Collection<?> collection = (Collection<?>) value;
-			if (collection != null && collection.size() > 0) {
-				return this.toCollectionProperty(key, collection);
-			}
+			return collection.isEmpty() ? null : this.toCollectionProperty(key, collection); 
 		} else {
 			return this.toObjectProperty(key, value);
 		}
-    	
-    	throw new IllegalArgumentException("Could not determine odata type for instance of class " + value.getClass().getCanonicalName());
     }
     
     private OProperty<List<OProperty<?>>> toObjectProperty(String key, Object value) {
