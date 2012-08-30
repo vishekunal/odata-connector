@@ -11,13 +11,13 @@
     <parent>
         <groupId>org.mule.tools.devkit</groupId>
         <artifactId>mule-devkit-parent</artifactId>
-        <version>3.3.1-SNAPSHOT</version>
+        <version>3.3.1</version>
     </parent>
 
     <properties>
         <junit.version>4.9</junit.version>
         <mockito.version>1.8.2</mockito.version>
-        <mule.devkit.version>3.3.1-SNAPSHOT</mule.devkit.version>
+        <mule.devkit.version>3.3.1</mule.devkit.version>
         <jdk.version>1.6</jdk.version>
         <category>Community</category>
         <licensePath>LICENSE.md</licensePath>
