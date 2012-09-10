@@ -28,11 +28,15 @@ class ConsumerDeleteLinkRequest extends ConsumerEntityRequestBase<Void> {
 
   @Override
   public Void execute() {
-    String path = Enumerable.create(getSegments()).join("/");
-    path = ConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
-    ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
-    getClient().deleteLink(request);
+    getClient().deleteLink(this.getRawRequest());
     return null;
+  }
+  
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  String path = Enumerable.create(getSegments()).join("/");
+	  path = ConsumerQueryLinksRequest.linksPath(targetNavProp, targetKeyValues).apply(path);
+	  return ODataClientRequest.delete(getServiceRootUri() + path);
   }
 
 }

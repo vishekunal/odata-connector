@@ -57,23 +57,29 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
     this.expand = expand;
     return this;
   }
+  
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  String path = Enumerable.create(getSegments()).join("/");
+	  
+	  ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
+	  
+	  if (select != null) {
+		  request = request.queryParam("$select", select);
+	  }
+	  
+	  if (expand != null) {
+		  request = request.queryParam("$expand", expand);
+	  }
+	  
+	  return request;
+  }
 
   @Override
   public T execute() {
 
-    String path = Enumerable.create(getSegments()).join("/");
 
-    ODataClientRequest request = ODataClientRequest.get(getServiceRootUri() + path);
-
-    if (select != null) {
-      request = request.queryParam("$select", select);
-    }
-
-    if (expand != null) {
-      request = request.queryParam("$expand", expand);
-    }
-
-    ClientResponse response = getClient().getEntity(request);
+    ClientResponse response = getClient().getEntity(this.getRawRequest());
     if (response == null)
       return null;
 

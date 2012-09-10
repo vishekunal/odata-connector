@@ -28,12 +28,16 @@ class ConsumerCreateLinkRequest extends ConsumerEntityRequestBase<Void> {
 
   @Override
   public Void execute() {
-    String path = Enumerable.create(getSegments()).join("/");
-    path = ConsumerQueryLinksRequest.linksPath(targetNavProp, null).apply(path);
-
-    ODataClientRequest request = ODataClientRequest.post(getServiceRootUri() + path, toSingleLink(targetEntity));
-    getClient().createLink(request);
+    getClient().createLink(this.getRawRequest());
     return null;
+  }
+  
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  String path = Enumerable.create(getSegments()).join("/");
+	  path = ConsumerQueryLinksRequest.linksPath(targetNavProp, null).apply(path);
+	  
+	  return ODataClientRequest.post(getServiceRootUri() + path, toSingleLink(targetEntity));
   }
 
 }

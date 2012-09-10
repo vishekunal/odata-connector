@@ -30,12 +30,16 @@ class ConsumerUpdateLinkRequest extends ConsumerEntityRequestBase<Void> {
 
   @Override
   public Void execute() {
-    String path = Enumerable.create(getSegments()).join("/");
-    path = ConsumerQueryLinksRequest.linksPath(targetNavProp, oldTargetKeyValues).apply(path);
-
-    ODataClientRequest request = ODataClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
-    getClient().updateLink(request);
+    getClient().updateLink(this.getRawRequest());
     return null;
+  }
+  
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  String path = Enumerable.create(getSegments()).join("/");
+	  path = ConsumerQueryLinksRequest.linksPath(targetNavProp, oldTargetKeyValues).apply(path);
+	  
+	  return ODataClientRequest.put(getServiceRootUri() + path, toSingleLink(newTargetEntity));
   }
 
 }
