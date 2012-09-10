@@ -9,6 +9,8 @@
 
 package org.odata4j.core;
 
+import org.odata4j.consumer.ODataClientRequest;
+
 /**
  * A consumer-side modification-request builder, used for operations such as MERGE and UPDATE.  Call {@link #execute()} to issue the request.
  *
@@ -65,5 +67,11 @@ public interface OModifyRequest<T> {
    * @return the modification-request builder
    */
   OModifyRequest<T> nav(String navProperty, OEntityKey key);
+  
+  /**
+   * Returns the low level, not yet executed OData request
+   * @return
+   */
+  public ODataClientRequest getRawRequest();
 
 }

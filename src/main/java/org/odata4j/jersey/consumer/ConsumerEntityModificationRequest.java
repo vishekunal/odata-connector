@@ -52,30 +52,39 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
 
   @Override
   public boolean execute() {
-
-    List<OProperty<?>> requestProps = props;
-    if (updateRoot != null) {
-      OEntity updateRootEntity = (OEntity) updateRoot;
-      requestProps = Enumerable.create(updateRootEntity.getProperties()).toList();
-      for (final OProperty<?> prop : props) {
-        OProperty<?> requestProp = Enumerable.create(requestProps).firstOrNull(new Predicate1<OProperty<?>>() {
-          public boolean apply(OProperty<?> input) {
-            return input.getName().equals(prop.getName());
-          }
-        });
-        requestProps.remove(requestProp);
-        requestProps.add(prop);
-      }
-    }
-
-    OEntityKey entityKey = Enumerable.create(segments).last().key;
-    Entry entry = client.createRequestEntry(entitySet, entityKey, requestProps, links);
-
-    String path = Enumerable.create(segments).join("/");
-
-    ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+	ODataClientRequest request = this.getRawRequest();
     boolean rt = client.updateEntity(request);
     return rt;
+  }
+  
+  /**
+   * @see org.odata4j.core.OModifyRequest#getRawRequest()
+   */
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  List<OProperty<?>> requestProps = props;
+	  if (updateRoot != null) {
+		  OEntity updateRootEntity = (OEntity) updateRoot;
+		  requestProps = Enumerable.create(updateRootEntity.getProperties()).toList();
+		  for (final OProperty<?> prop : props) {
+			  OProperty<?> requestProp = Enumerable.create(requestProps).firstOrNull(new Predicate1<OProperty<?>>() {
+				  public boolean apply(OProperty<?> input) {
+					  return input.getName().equals(prop.getName());
+				  }
+			  });
+			  requestProps.remove(requestProp);
+			  requestProps.add(prop);
+		  }
+	  }
+	  
+	  OEntityKey entityKey = Enumerable.create(segments).last().key;
+	  Entry entry = client.createRequestEntry(entitySet, entityKey, requestProps, links);
+	  
+	  String path = Enumerable.create(segments).join("/");
+	  
+	  ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+	  
+	  return request;
   }
 
   @Override

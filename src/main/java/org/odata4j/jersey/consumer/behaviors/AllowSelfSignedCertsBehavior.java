@@ -19,6 +19,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.log4j.Logger;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.Throwables;
@@ -30,6 +31,8 @@ import com.sun.jersey.client.urlconnection.HTTPSProperties;
 public enum AllowSelfSignedCertsBehavior implements JerseyClientBehavior {
 
   INSTANCE;
+  
+  private static final Logger logger = Logger.getLogger(AllowSelfSignedCertsBehavior.class);
 
   @Override
   public ODataClientRequest transform(ODataClientRequest request) {
@@ -42,7 +45,9 @@ public enum AllowSelfSignedCertsBehavior implements JerseyClientBehavior {
     HostnameVerifier hv = new HostnameVerifier() {
       public boolean verify(String urlHostName, SSLSession session) {
         // Write a warning, as there is certainly a potential security implication here.
-        System.out.println(String.format("Warning:  URL Host: '%s' does not equal '%s'", urlHostName, session.getPeerHost()));
+        if (logger.isDebugEnabled()) {
+        	logger.debug(String.format("Warning:  URL Host: '%s' does not equal '%s'", urlHostName, session.getPeerHost()));
+        }
         return true;
       }
     };

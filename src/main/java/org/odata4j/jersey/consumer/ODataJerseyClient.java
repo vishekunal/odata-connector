@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.log4j.Logger;
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
@@ -41,7 +42,6 @@ import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.format.Entry;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
-import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.format.SingleLink;
 import org.odata4j.format.xml.AtomCollectionInfo;
 import org.odata4j.format.xml.AtomServiceDocumentFormatParser;
@@ -62,6 +62,8 @@ class ODataJerseyClient extends AbstractODataClient {
   private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") }; // jersey hates MERGE, tunnel through POST
   private final OClientBehavior[] behaviors;
   private final ODataVersion version;
+  
+  private static final Logger logger = Logger.getLogger(ODataJerseyClient.class);
 
   private final Client client;
 
@@ -163,7 +165,6 @@ class ODataJerseyClient extends AbstractODataClient {
     };
   }
 
-  @SuppressWarnings("unchecked")
   private ClientResponse doRequest(FormatType reqType, ODataClientRequest request, Integer... expectedResponseStatus) {
 
     if (behaviors != null) {
@@ -187,35 +188,28 @@ class ODataJerseyClient extends AbstractODataClient {
       b.header(header, request.getHeaders().get(header));
     }
     if (!request.getHeaders().containsKey(ODataConstants.Headers.USER_AGENT))
-      b.header(ODataConstants.Headers.USER_AGENT, "odata4j.org");
+      b.header(ODataConstants.Headers.USER_AGENT, "MuleESB OData connector");
 
     if (ODataConsumer.dump.requestHeaders())
       dumpHeaders(request, webResource, b);
 
     // request body
     if (request.getPayload() != null) {
+    	
+    	StringWriter sw = new StringWriter();
+        FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.getFormatType(), this.version);
+        fw.write(null, sw, request.getPayload());
+        
+        String entity = sw.toString();
 
-      Class<?> payloadClass;
-      if (request.getPayload() instanceof Entry)
-        payloadClass = Entry.class;
-      else if (request.getPayload() instanceof SingleLink)
-        payloadClass = SingleLink.class;
-      else
-        throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
-
-      StringWriter sw = new StringWriter();
-      FormatWriter<Object> fw = (FormatWriter<Object>) (Object)
-          FormatWriterFactory.getFormatWriter(payloadClass, null, this.getFormatType().toString(), null, this.version);
-      fw.write(null, sw, request.getPayload());
-
-      String entity = sw.toString();
-      if (ODataConsumer.dump.requestBody())
-        log(entity);
-
-      // allow the client to override the default format writer content-type
-      String contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
-          ? request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
-          : fw.getContentType();
+    	if (ODataConsumer.dump.requestBody() && logger.isDebugEnabled()) {
+            logger.debug(entity);
+    	}
+    	
+    	// allow the client to override the default format writer content-type
+        String contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
+            ? request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
+            : fw.getContentType();
 
       b.entity(entity, contentType);
     }
@@ -268,18 +262,22 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   private void dumpResponseBody(String textEntity, MediaType type) {
-    String logXml = textEntity;
-    if (type.toString().contains("xml") || logXml != null && logXml.startsWith("<feed")) {
-      try {
-        logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
-      } catch (Exception ignore) {}
+    if (logger.isDebugEnabled()) {
+    	String logXml = textEntity;
+    	if (type.toString().contains("xml") || logXml != null && logXml.startsWith("<feed")) {
+    		try {
+    			logXml = XDocument.parse(logXml).toString(XmlFormat.INDENTED);
+    		} catch (Exception ignore) {}
+    	}
+    	logger.debug(logXml);
     }
-    log(logXml);
   }
 
   private void dumpHeaders(ClientResponse response) {
-    log("Status: " + response.getStatus());
-    dump(response.getHeaders());
+    if (logger.isDebugEnabled()) {
+    	logger.debug("Status: " + response.getStatus());
+    	dump(response.getHeaders());
+    }
   }
 
   private static boolean dontTryRequestHeaders;
@@ -302,8 +300,10 @@ class ODataJerseyClient extends AbstractODataClient {
   }
 
   private void dumpHeaders(ODataClientRequest request, WebResource webResource, WebResource.Builder b) {
-    log(request.getMethod() + " " + webResource);
-    dump(getRequestHeaders(b));
+    if (logger.isDebugEnabled()) {
+    	logger.debug(request.getMethod() + " " + webResource);
+    	dump(getRequestHeaders(b));
+    }
   }
 
   @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -311,12 +311,14 @@ class ODataJerseyClient extends AbstractODataClient {
     if (headers == null)
       return;
 
-    for (Object header : headers.keySet())
-      log(header + ": " + headers.getFirst(header));
-  }
-
-  private static void log(String message) {
-    System.out.println(message);
+    if (logger.isDebugEnabled()) {
+    	StringBuilder log = new StringBuilder();
+    	for (Object header : headers.keySet()) {
+    		log.append(header).append(": ").append(headers.getFirst(header));
+    	}
+    	
+    	logger.debug(log.toString());
+    }
   }
 
 }

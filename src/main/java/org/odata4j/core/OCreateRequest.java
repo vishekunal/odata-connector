@@ -9,6 +9,8 @@
 
 package org.odata4j.core;
 
+import org.odata4j.consumer.ODataClientRequest;
+
 /**
  * A consumer-side create-request builder.  Call {@link #execute()} to issue the request.
  *
@@ -97,5 +99,11 @@ public interface OCreateRequest<T> {
    * @see #inline(String, OEntity...)
    */
   T get();
+  
+  /**
+   * Returns the low level, not yet executed OData request
+   * @return
+   */
+  public ODataClientRequest getRawRequest();
 
 }

@@ -74,9 +74,6 @@ public class ExpressionParser {
     // dump(value,tokens,null);
 
     CommonExpression rt = readExpression(tokens);
-    if (DUMP_EXPRESSION_INFO) {
-      dump(value, tokens, rt);
-    }
 
     return rt;
   }
@@ -86,9 +83,6 @@ public class ExpressionParser {
     // dump(value,tokens,null);
 
     List<CommonExpression> expressions = readExpressions(tokens);
-    if (DUMP_EXPRESSION_INFO) {
-      dump(value, tokens, Enumerable.create(expressions).toArray(CommonExpression.class));
-    }
 
     return Enumerable.create(expressions).select(new Func1<CommonExpression, OrderByExpression>() {
       public OrderByExpression apply(CommonExpression input) {
@@ -100,17 +94,6 @@ public class ExpressionParser {
     }).toList();
   }
 
-  private static void dump(String value, List<Token> tokens, CommonExpression... expressions) {
-    String msg = "[" + value + "] -> " + Enumerable.create(tokens).join("");
-    if (expressions != null) {
-      msg = msg + " -> " + Enumerable.create(expressions).select(new Func1<CommonExpression, String>() {
-        public String apply(CommonExpression input) {
-          return Expression.asPrintString(input);
-        }
-      }).join(",");
-    }
-    System.out.println(msg);
-  }
 
   public static List<EntitySimpleProperty> parseExpand(String value) {
     List<Token> tokens = tokenize(value);
@@ -806,17 +789,10 @@ public class ExpressionParser {
         rt.add(new Token(TokenType.SYMBOL, Character.toString(c)));
         current++;
       } else {
-        dumpTokens(rt);
         throw new RuntimeException("Unable to tokenize: " + value + " current: " + current + " rem: " + value.substring(current));
       }
     }
 
-  }
-
-  public static void dumpTokens(List<Token> tokens) {
-    for (Token t : tokens) {
-      System.out.println(t.type.toString() + t.toString());
-    }
   }
 
   private static int readDigits(String value, int start) {

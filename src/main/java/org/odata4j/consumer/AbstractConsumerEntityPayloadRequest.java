@@ -32,7 +32,7 @@ public abstract class AbstractConsumerEntityPayloadRequest {
   protected final String entitySetName;
   protected final String serviceRootUri;
   protected final EdmDataServices metadata;
-
+  
   protected AbstractConsumerEntityPayloadRequest(String entitySetName, String serviceRootUri, EdmDataServices metadata) {
     this.entitySetName = entitySetName;
     this.serviceRootUri = serviceRootUri;
@@ -86,6 +86,6 @@ public abstract class AbstractConsumerEntityPayloadRequest {
 
     this.links.add(OLinks.relatedEntity(rel, navProperty, href.toString()));
     return rt;
+  
   }
-
 }

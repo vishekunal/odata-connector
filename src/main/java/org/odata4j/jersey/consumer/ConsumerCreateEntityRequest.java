@@ -53,28 +53,37 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
   @Override
   public T execute() {
 
-    EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
-    Entry entry = client.createRequestEntry(ees, null, props, links);
-
-    StringBuilder url = new StringBuilder(serviceRootUri);
-    if (parent != null) {
-      url.append(InternalUtil.getEntityRelId(parent))
-          .append("/")
-          .append(navProperty);
-    } else {
-      url.append(entitySetName);
-    }
-
-    ODataClientRequest request = ODataClientRequest.post(url.toString(), entry);
+    ODataClientRequest request = this.getRawRequest();
     ClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
-    FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class,
-        client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));
-    entry = parser.parse(client.getFeedReader(response));
+    FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, client.getFormatType(), new Settings(version, metadata, entitySetName, null, fcMapping));
+    
+    Entry entry = parser.parse(client.getFeedReader(response));
 
     return (T) entry.getEntity();
+  }
+  
+  /**
+   * @see org.odata4j.core.OCreateRequest#getRawRequest()
+   */
+  @Override
+  public ODataClientRequest getRawRequest() {
+	  
+	  EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
+	  Entry entry = client.createRequestEntry(ees, null, props, links);
+	  
+	  StringBuilder url = new StringBuilder(serviceRootUri);
+	  if (parent != null) {
+		  url.append(InternalUtil.getEntityRelId(parent))
+		  .append("/")
+		  .append(navProperty);
+	  } else {
+		  url.append(entitySetName);
+	  }
+	  
+	  return ODataClientRequest.post(url.toString(), entry);
   }
 
   @SuppressWarnings("unchecked")

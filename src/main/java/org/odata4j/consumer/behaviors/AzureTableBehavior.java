@@ -17,6 +17,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.odata4j.consumer.ODataClientRequest;
@@ -29,6 +30,7 @@ public class AzureTableBehavior implements OClientBehavior {
 
   private final String account;
   private final String key;
+  private static final Logger logger = Logger.getLogger(AzureTableBehavior.class);
 
   public AzureTableBehavior(String account, String key) {
     this.account = account;
@@ -62,8 +64,8 @@ public class AzureTableBehavior implements OClientBehavior {
       String canonicalizedResource = "/" + account + "/" + path;
       String stringToSign = request.getMethod() + "\n\n" + contentType + "\n" + date + "\n" + canonicalizedResource;
 
-      if (ODataConsumer.dump.requestHeaders())
-        System.out.println("stringToSign: " + stringToSign);
+      if (ODataConsumer.dump.requestHeaders() && logger.isDebugEnabled())
+        logger.debug("stringToSign: " + stringToSign);
 
       Mac mac = Mac.getInstance("HmacSHA256");
       mac.init(new SecretKeySpec(base64Decode(key), mac.getAlgorithm()));
@@ -73,8 +75,8 @@ public class AzureTableBehavior implements OClientBehavior {
       String sig = base64Encode(sigBytes);
       String auth = "SharedKey " + account + ":" + sig;
 
-      if (ODataConsumer.dump.requestHeaders())
-        System.out.println("auth: " + auth);
+      if (ODataConsumer.dump.requestHeaders() && logger.isDebugEnabled())
+        logger.debug("auth: " + auth);
 
       request = request
           .header("x-ms-version", "2009-09-19")

@@ -9,6 +9,8 @@
 
 package org.odata4j.core;
 
+import org.odata4j.consumer.ODataClientRequest;
+
 /**
  * A consumer-side entity-request builder, used for operations on a single entity such as DELETE.  Call {@link #execute()} to issue the request.
  *
@@ -39,5 +41,11 @@ public interface OEntityRequest<T> {
    * @return the entity-request builder
    */
   OEntityRequest<T> nav(String navProperty);
+  
+  /**
+   * Returns the low level, not yet executed OData request
+   * @return
+   */
+  public ODataClientRequest getRawRequest();
 
 }

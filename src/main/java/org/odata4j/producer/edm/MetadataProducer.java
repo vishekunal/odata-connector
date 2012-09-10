@@ -780,13 +780,6 @@ public class MetadataProducer implements ODataProducer {
     // didn't find it...
   }
 
-  public void log() {
-    StringWriter sw = new StringWriter();
-    EdmxFormatWriter.write(edm, sw);
-    //log.debug(sw.toString());
-    System.out.println(sw.toString());
-  }
-
   @Override
   public BaseResponse getNavProperty(String entitySetName, OEntityKey entityKey, String navProp, QueryInfo queryInfo) {
     throw new UnsupportedOperationException("Not supported yet.");

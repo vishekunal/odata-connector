@@ -14,8 +14,15 @@ import java.util.Set;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
+import org.odata4j.core.ODataVersion;
 import org.odata4j.core.Throwables;
+import org.odata4j.format.Entry;
+import org.odata4j.format.FormatType;
+import org.odata4j.format.FormatWriter;
+import org.odata4j.format.FormatWriterFactory;
+import org.odata4j.format.SingleLink;
 import org.odata4j.internal.PlatformUtil;
 import org.odata4j.jersey.consumer.behaviors.JerseyClientBehavior;
 import org.odata4j.jersey.internal.StringProvider2;
@@ -27,7 +34,7 @@ import com.sun.jersey.core.impl.provider.header.MediaTypeProvider;
 import com.sun.jersey.core.spi.factory.AbstractRuntimeDelegate;
 import com.sun.jersey.spi.HeaderDelegateProvider;
 
-class JerseyClientUtil {
+public class JerseyClientUtil {
 
   static {
     if (PlatformUtil.runningOnAndroid())
@@ -84,6 +91,19 @@ class JerseyClientUtil {
       }
     }
     return resource;
+  }
+  
+  @SuppressWarnings("unchecked")
+  public static FormatWriter<Object> newFormatWriter(ODataClientRequest request, FormatType format, ODataVersion version) {
+	  Class<?> payloadClass;
+      if (request.getPayload() instanceof Entry)
+        payloadClass = Entry.class;
+      else if (request.getPayload() instanceof SingleLink)
+        payloadClass = SingleLink.class;
+      else
+        throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
+
+      return (FormatWriter<Object>) (Object) FormatWriterFactory.getFormatWriter(payloadClass, null, format.toString(), null, version);
   }
 
 }

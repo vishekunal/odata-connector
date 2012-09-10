@@ -13,6 +13,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +30,7 @@ import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.modules.odata.factory.ODataConsumerFactory;
 import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
+import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OCollection;
@@ -45,10 +47,12 @@ import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.OSimpleObjects;
 import org.odata4j.edm.EdmCollectionType;
 import org.odata4j.edm.EdmComplexType;
+import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
-import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.format.FormatType;
+import org.odata4j.format.FormatWriter;
+import org.odata4j.jersey.consumer.JerseyClientUtil;
 
 /**
  * 
@@ -191,6 +195,26 @@ public abstract class BaseODataConnector {
 		return entity.execute();
     }
     
+    public String batch(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName) {
+    	OCreateRequest<OEntity> entity = this.consumer.createEntity(this.getEntitySetName(pojo, entitySetName));
+    	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
+    	
+		if (properties != null) {
+			entity.properties(properties);
+		}
+		
+		ODataClientRequest request = entity.getRawRequest();
+		
+		StringWriter sw = new StringWriter();
+        FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
+        fw.write(null, sw, request.getPayload());
+        
+        String entityString = sw.toString();
+        
+        return entityString;
+		
+    }
+    
     /**
      * Inserts entities from an input list of pojos
      * 
@@ -201,7 +225,7 @@ public abstract class BaseODataConnector {
      * @return a list with instances of {@link org.odata4j.core.OEntity} representing the entities just created on the OData set
      */
     @Processor
-    public List<OEntity> createFromPojosList(@Optional @Default("#[payload}") List<Object> pojos, @Optional String entitySetName) {
+    public List<OEntity> createFromPojosList(@Optional @Default("#[payload]") List<Object> pojos, @Optional String entitySetName) {
     	
     	if (pojos == null || pojos.isEmpty()) {
     		if (logger.isDebugEnabled()) {
@@ -271,7 +295,7 @@ public abstract class BaseODataConnector {
     public void deleteFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName, String keyAttribute) {
     	this.consumer.deleteEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
     }
-
+    
 	private Object extractValue(Object pojo, String keyAttribute) {
 		assert pojo != null : "pojo cannot be null";
 		assert !StringUtils.isBlank(keyAttribute) : "ket attribute cannot be null";
