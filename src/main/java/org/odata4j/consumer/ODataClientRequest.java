@@ -38,6 +38,7 @@ public class ODataClientRequest {
   /**
    * Gets the request http method.
    * 
+   * 
    * @return the http method
    */
   public String getMethod() {

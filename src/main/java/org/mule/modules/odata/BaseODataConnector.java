@@ -13,26 +13,32 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.mule.api.MuleMessage;
+import org.mule.api.NestedProcessor;
 import org.mule.api.annotations.Configurable;
+import org.mule.api.annotations.InvalidateConnectionOn;
 import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
+import org.mule.api.transport.PropertyScope;
+import org.mule.modules.odata.exception.NotAuthorizedException;
 import org.mule.modules.odata.factory.ODataConsumerFactory;
 import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
+import org.odata4j.core.OBatchRequest;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
 import org.odata4j.core.OComplexObjects;
@@ -53,6 +59,8 @@ import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.jersey.consumer.JerseyClientUtil;
+import org.odata4j.producer.resources.BatchBodyPart;
+import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 
 /**
  * 
@@ -63,6 +71,7 @@ public abstract class BaseODataConnector {
 
 	private static final Logger logger = Logger.getLogger(BaseODataConnector.class);
 	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
+	private static final String BATCH_PARTS = "ODATA_CONNECTOR_BATCH_BODY_PARTS";
 	
 	/**
 	 * An instance of {@link org.mule.modules.odata.factory.ODataConsumerFactory}
@@ -124,7 +133,7 @@ public abstract class BaseODataConnector {
     /**
      * Reads entities from an specified set and returns it as a list of pojos
      *
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-as-pojos}
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-entities}
      *
      * @param returnClass the canonical class name for the pojo instances to be returned
      * @param entitySetName the name of the set to be read
@@ -137,8 +146,9 @@ public abstract class BaseODataConnector {
      * @return a list of objects of class "returnClass" representing the obtained entities
      */
     @Processor
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @SuppressWarnings("unchecked")
-    public List<Object> getAsPojos(
+    public List<Object> getEntities(
     						String returnClass,
     						String entitySetName,
     						@Optional String filter,
@@ -177,87 +187,87 @@ public abstract class BaseODataConnector {
     /**
      * Inserts an entity from an input pojo
      * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-from-pojo}
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-entity}
      * 
-     * @param pojo an object representing the entity
+     * @param message the current mule message
+     * @param entity an object representing the entity
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      * @return an instance of {@link org.odata4j.core.OEntity} representing the entity just created on the OData set
      */
     @Processor
-    public OEntity createFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName) {
-    	OCreateRequest<OEntity> entity = this.consumer.createEntity(this.getEntitySetName(pojo, entitySetName));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
+    @Inject
+    public OEntity createEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName) {
+    	OCreateRequest<OEntity> request = this.consumer.createEntity(this.getEntitySetName(entity, entitySetName));
+    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
     	
 		if (properties != null) {
-			entity.properties(properties);
+			request.properties(properties);
 		}
 		
-		return entity.execute();
-    }
-    
-    public String batch(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName) {
-    	OCreateRequest<OEntity> entity = this.consumer.createEntity(this.getEntitySetName(pojo, entitySetName));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
-    	
-		if (properties != null) {
-			entity.properties(properties);
+		List<BatchBodyPart> batchParts = message.getInvocationProperty(BATCH_PARTS);
+		
+		if (batchParts != null) {
+			batchParts.add(this.toBatchBodyPart(request.getRawRequest()));
+			return null;
 		}
 		
-		ODataClientRequest request = entity.getRawRequest();
-		
-		StringWriter sw = new StringWriter();
-        FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
-        fw.write(null, sw, request.getPayload());
-        
-        String entityString = sw.toString();
-        
-        return entityString;
-		
+		return request.execute();
     }
     
-    /**
-     * Inserts entities from an input list of pojos
-     * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-from-pojos-list}
-     * 
-     * @param pojos a list of pojos representing the entities you want to create on the OData service
-     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
-     * @return a list with instances of {@link org.odata4j.core.OEntity} representing the entities just created on the OData set
-     */
-    @Processor
-    public List<OEntity> createFromPojosList(@Optional @Default("#[payload]") List<Object> pojos, @Optional String entitySetName) {
-    	
-    	if (pojos == null || pojos.isEmpty()) {
-    		if (logger.isDebugEnabled()) {
-    			logger.debug("empty pojos list received, exiting without doing anything");
+    @Inject
+    public void batch(MuleMessage message, List<NestedProcessor> processors) {
+    	List<BatchBodyPart> parts = new ArrayList<BatchBodyPart>();
+    	message.setInvocationProperty(BATCH_PARTS, parts);
+
+    	try {
+    		for (NestedProcessor processor : processors) {
+    			processor.process();
     		}
-    		
-    		return Collections.emptyList();
+    	} catch (Exception e) {
+    		throw new RuntimeException("Error on batch nested processor", e);
+    	} finally {
+    		message.removeProperty(BATCH_PARTS, PropertyScope.INVOCATION);
     	}
     	
-    	entitySetName = this.getEntitySetName(pojos.get(0), entitySetName);
-    	
-    	List<OEntity> entities = new ArrayList<OEntity>(pojos.size());
-    	
-    	for (Object pojo : pojos) {
-    		entities.add(this.createFromPojo(pojo, entitySetName));
+    	if (parts.isEmpty()) {
+    		if (logger.isDebugEnabled()) {
+    			logger.debug("No parts where added by nested processors, exiting without sending a batch request");
+    		}
+    		return;
     	}
-    	return entities;
+    	
+    	OBatchRequest request = this.consumer.createBatch();
+    	request.execute(parts, this.formatType);
+		
     }
+    
+    private BatchBodyPart toBatchBodyPart(ODataClientRequest request) {
+    	BatchBodyPart part = new BatchBodyPart();
+		FormatWriter<Object> formatWriter = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
+		
+		part.setEntity(JerseyClientUtil.toString(request, formatWriter));
+		part.setHttpMethod(HTTP_METHOD.valueOf(request.getMethod()));
+		part.setUri(request.getUrl());
+		
+		return part;
+    }
+    
     
     /**
      * Updates an entity represented by a pojo on the OData service
      * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-from-pojo}
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-entity}
      * 
-     * @param pojo an object representing the entity
+     * @param entity an object representing the entity
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
-    public void updateFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName, String keyAttribute) {
-    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(pojo);
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
+    public void updateEntity(@Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
+    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
+    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
 
 		if (properties != null) {
 			request.properties(properties);
@@ -266,34 +276,20 @@ public abstract class BaseODataConnector {
 		request.execute();
     }
     
-    /**
-     * Updates on the OData serviceall entities represented by the objects in the pojos collection
-     * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-from-pojos}
-     * 
-     * @param pojos a collection with pojos
-     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
-     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
-     */
-    @Processor
-    public void updateFromPojos(@Optional @Default("#[payload]") Collection<Object> pojos, @Optional String entitySetName, String keyAttribute) {
-    	for (Object pojo : pojos) {
-    		this.updateFromPojo(pojo, entitySetName, keyAttribute);
-    	}
-    }
     
     /**
      * Deletes an entity represented by a pojo on the OData service
      * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-from-pojo}
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-entity}
      * 
-     * @param pojo an object representing the entity
+     * @param entity an object representing the entity
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
-    public void deleteFromPojo(@Optional @Default("#[payload]") Object pojo, @Optional String entitySetName, String keyAttribute) {
-    	this.consumer.deleteEntity(this.getEntitySetName(pojo, entitySetName), this.extractValue(pojo, keyAttribute));
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
+    public void deleteEntity(@Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
+    	this.consumer.deleteEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
     }
     
 	private Object extractValue(Object pojo, String keyAttribute) {

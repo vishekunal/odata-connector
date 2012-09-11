@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
 import org.core4j.xml.XmlFormat;
+import org.mule.modules.odata.exception.NotAuthorizedException;
 import org.odata4j.consumer.AbstractODataClient;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
@@ -73,6 +73,10 @@ class ODataJerseyClient extends AbstractODataClient {
     this.client = JerseyClientUtil.newClient(clientFactory, behaviors);
     this.version = version;
   }
+  
+  public Client getClient() {
+	return client;
+  }
 
   public EdmDataServices getMetadata(ODataClientRequest request) {
     ClientResponse response = doRequest(FormatType.ATOM, request, 200, 404, 400);
@@ -117,6 +121,10 @@ class ODataJerseyClient extends AbstractODataClient {
 
   public ClientResponse createEntity(ODataClientRequest request) {
     return doRequest(this.getFormatType(), request, 201);
+  }
+  
+  public ClientResponse batch(ODataClientRequest request) {
+	  return this.doRequest(this.getFormatType(), request, 201);
   }
 
   public boolean updateEntity(ODataClientRequest request) {
@@ -194,23 +202,28 @@ class ODataJerseyClient extends AbstractODataClient {
       dumpHeaders(request, webResource, b);
 
     // request body
-    if (request.getPayload() != null) {
+    String entity = null;
+    Object payload = request.getPayload();
+    String contentType = null;
+    
+    if (payload != null) {
     	
-    	StringWriter sw = new StringWriter();
-        FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.getFormatType(), this.version);
-        fw.write(null, sw, request.getPayload());
-        
-        String entity = sw.toString();
+    	if (payload instanceof String) {
+    		entity = (String) payload;
+    		contentType = reqType == FormatType.JSON ? MediaType.APPLICATION_JSON : MediaType.APPLICATION_ATOM_XML;
+    	} else {
+    		FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.getFormatType(), this.version);
+    		entity = JerseyClientUtil.toString(request, fw);
+    		contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
+    						? request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
+    						: fw.getContentType();
+    	}
 
     	if (ODataConsumer.dump.requestBody() && logger.isDebugEnabled()) {
             logger.debug(entity);
     	}
     	
     	// allow the client to override the default format writer content-type
-        String contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
-            ? request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
-            : fw.getContentType();
-
       b.entity(entity, contentType);
     }
 
@@ -220,6 +233,11 @@ class ODataJerseyClient extends AbstractODataClient {
     if (ODataConsumer.dump.responseHeaders())
       dumpHeaders(response);
     int status = response.getStatus();
+    
+    if (status == 401) {
+    	throw new NotAuthorizedException();
+    }
+    
     for (int expStatus : expectedResponseStatus) {
       if (status == expStatus) {
         return response;

@@ -9,6 +9,7 @@
 
 package org.odata4j.jersey.consumer;
 
+import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.util.Set;
 
@@ -104,6 +105,13 @@ public class JerseyClientUtil {
         throw new UnsupportedOperationException("Unsupported payload: " + request.getPayload());
 
       return (FormatWriter<Object>) (Object) FormatWriterFactory.getFormatWriter(payloadClass, null, format.toString(), null, version);
+  }
+  
+  public static String toString(ODataClientRequest request, FormatWriter<Object> format) {
+	  StringWriter sw = new StringWriter();
+      format.write(null, sw, request.getPayload());
+      
+      return sw.toString();
   }
 
 }

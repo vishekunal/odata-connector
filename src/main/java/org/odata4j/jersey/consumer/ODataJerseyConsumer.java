@@ -17,6 +17,7 @@ import org.odata4j.consumer.AbstractODataConsumer;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
+import org.odata4j.core.OBatchRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
@@ -226,6 +227,11 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
     FeedCustomizationMapping mapping = getFeedCustomizationMapping(entitySetName);
     return new ConsumerCreateEntityRequest<OEntity>(client, this.getServiceRootUri(), getMetadata(),
         entitySetName, mapping);
+  }
+  
+  @Override
+  public OBatchRequest createBatch() {
+	  return new ConsumerBatchRequest(this.client, this.getServiceRootUri());
   }
 
   /* (non-Javadoc)

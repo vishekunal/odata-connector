@@ -9,8 +9,11 @@
 
 package org.odata4j.consumer;
 
+import java.util.List;
+
 import org.core4j.Enumerable;
 import org.odata4j.core.EntitySetInfo;
+import org.odata4j.core.OBatchRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;
@@ -24,6 +27,8 @@ import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.format.FormatType;
+import org.odata4j.producer.resources.BatchBodyPart;
 
 public interface ODataConsumer {
 
@@ -278,6 +283,12 @@ public interface ODataConsumer {
    * @return a new create-request builder
    */
   OCreateRequest<OEntity> createEntity(String entitySetName);
+  
+  /**
+   * Creates a request to perform batch operations
+   * 
+   */
+  public OBatchRequest createBatch();
 
   /**
    * Modifies an existing entity using update semantics.

@@ -78,7 +78,6 @@ class ConsumerGetEntityRequest<T> extends ConsumerEntityRequestBase<T> implement
   @Override
   public T execute() {
 
-
     ClientResponse response = getClient().getEntity(this.getRawRequest());
     if (response == null)
       return null;

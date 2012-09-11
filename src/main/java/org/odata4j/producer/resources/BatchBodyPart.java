@@ -25,8 +25,11 @@ public class BatchBodyPart {
   private String uri;
   private String uriLast;
 
-  BatchBodyPart(HttpHeaders httpHeaders, UriInfo uriInfo) {
-    this.httpHeaders = httpHeaders;
+  public BatchBodyPart(){}
+  
+  public BatchBodyPart(HttpHeaders httpHeaders, UriInfo uriInfo) {
+    this();
+	this.httpHeaders = httpHeaders;
     this.uriInfo = uriInfo;
   }
 
