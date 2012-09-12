@@ -15,10 +15,12 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.core4j.Enumerable;
 import org.core4j.xml.XDocument;
@@ -183,8 +185,8 @@ class ODataJerseyClient extends AbstractODataClient {
     WebResource webResource = JerseyClientUtil.resource(client, request.getUrl(), behaviors);
 
     // set query params
-    for (String qpn : request.getQueryParams().keySet()) {
-      webResource = webResource.queryParam(qpn, request.getQueryParams().get(qpn));
+    for (Map.Entry<String, String> entry : request.getQueryParams().entrySet()) {
+      webResource = webResource.queryParam(entry.getKey(), entry.getValue());
     }
 
     WebResource.Builder b = webResource.getRequestBuilder();
@@ -204,19 +206,24 @@ class ODataJerseyClient extends AbstractODataClient {
     // request body
     String entity = null;
     Object payload = request.getPayload();
-    String contentType = null;
+    String contentType = request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE);
     
     if (payload != null) {
     	
     	if (payload instanceof String) {
     		entity = (String) payload;
-    		contentType = reqType == FormatType.JSON ? MediaType.APPLICATION_JSON : MediaType.APPLICATION_ATOM_XML;
+    		
+    		if (StringUtils.isBlank(contentType)) {
+    			contentType = reqType == FormatType.JSON ? MediaType.APPLICATION_JSON : MediaType.APPLICATION_ATOM_XML;
+    		}
+    		
     	} else {
     		FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.getFormatType(), this.version);
     		entity = JerseyClientUtil.toString(request, fw);
-    		contentType = request.getHeaders().containsKey(ODataConstants.Headers.CONTENT_TYPE)
-    						? request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE)
-    						: fw.getContentType();
+    		
+    		if (StringUtils.isBlank(contentType)) {
+    			contentType = fw.getContentType();
+    		}
     	}
 
     	if (ODataConsumer.dump.requestBody() && logger.isDebugEnabled()) {

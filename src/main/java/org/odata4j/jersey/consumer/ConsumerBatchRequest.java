@@ -18,7 +18,15 @@ import javax.ws.rs.core.MediaType;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OBatchRequest;
+import org.odata4j.core.ODataConstants;
+import org.odata4j.core.ODataVersion;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.format.Entry;
+import org.odata4j.format.FormatParser;
+import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
+import org.odata4j.format.Settings;
+import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.resources.BatchBodyPart;
 import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 
@@ -33,11 +41,13 @@ public class ConsumerBatchRequest implements OBatchRequest {
 	
 	private final String baseUrl;
 	private final ODataJerseyClient client;
+	private EdmDataServices metadata;
 	
 	
-	public ConsumerBatchRequest(ODataJerseyClient client, String baseUrl) {
+	public ConsumerBatchRequest(ODataJerseyClient client, String baseUrl, EdmDataServices metadata) {
 		this.baseUrl = baseUrl;
 		this.client = client;
+		this.metadata = metadata;
 	}
 	
 	@Override
@@ -76,8 +86,15 @@ public class ConsumerBatchRequest implements OBatchRequest {
 		System.out.println(entity.toString());
 		
 		ODataClientRequest request = new ODataClientRequest("POST", this.baseUrl + "$batch", headers, null, entity.toString());
-		return this.client.batch(request);
+		ClientResponse response = this.client.batch(request);
 		
+		ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
+
+	    FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, client.getFormatType(), new Settings(version, metadata, null, null, null));
+	    
+	    Entry entry = parser.parse(client.getFeedReader(response));
+		entry.toString();
+	    return response;
 	}
 	
 
