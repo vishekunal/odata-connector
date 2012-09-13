@@ -12,25 +12,19 @@ package org.odata4j.jersey.consumer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;
 import org.odata4j.core.OBatchRequest;
-import org.odata4j.core.ODataConstants;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.format.Entry;
-import org.odata4j.format.FormatParser;
-import org.odata4j.format.FormatParserFactory;
 import org.odata4j.format.FormatType;
-import org.odata4j.format.Settings;
-import org.odata4j.internal.InternalUtil;
 import org.odata4j.producer.resources.BatchBodyPart;
+import org.odata4j.producer.resources.BatchPartResponse;
+import org.odata4j.producer.resources.BatchResult;
 import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
-
-import com.sun.jersey.api.client.ClientResponse;
 
 /**
  * 
@@ -39,19 +33,18 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 public class ConsumerBatchRequest implements OBatchRequest {
 	
+	private static final Pattern STATUS_CODE_PATTERN = Pattern.compile("HTTP/1.1 ([\\d]*) [\\w]*");
 	private final String baseUrl;
 	private final ODataJerseyClient client;
-	private EdmDataServices metadata;
 	
 	
-	public ConsumerBatchRequest(ODataJerseyClient client, String baseUrl, EdmDataServices metadata) {
+	public ConsumerBatchRequest(ODataJerseyClient client, String baseUrl) {
 		this.baseUrl = baseUrl;
 		this.client = client;
-		this.metadata = metadata;
 	}
 	
 	@Override
-	public ClientResponse execute(List<BatchBodyPart> parts, FormatType formatType) {
+	public BatchResult execute(List<BatchBodyPart> parts, FormatType formatType) {
 		String batchId = Guid.randomGuid().toString();
 		String changeSetId = Guid.randomGuid().toString();
 		
@@ -75,7 +68,7 @@ public class ConsumerBatchRequest implements OBatchRequest {
 						.append("\nContent-Type: ").append(formatType == FormatType.ATOM ? MediaType.APPLICATION_ATOM_XML : MediaType.APPLICATION_JSON)
 						.append("\nContent-Lenght: ").append(part.getEntity().length())
 						.append("\n").append(part.getEntity());
-			}
+		}
 		
 		entity.append("\n\n--changeset(").append(changeSetId).append(")--")
 				.append("\n--batch(").append(batchId).append(")--");
@@ -83,18 +76,53 @@ public class ConsumerBatchRequest implements OBatchRequest {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "multipart/mixed; boundary=batch_" + batchId);
 		
-		System.out.println(entity.toString());
 		
 		ODataClientRequest request = new ODataClientRequest("POST", this.baseUrl + "$batch", headers, null, entity.toString());
-		ClientResponse response = this.client.batch(request);
-		
-		ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
 
-	    FormatParser<Entry> parser = FormatParserFactory.getParser(Entry.class, client.getFormatType(), new Settings(version, metadata, null, null, null));
-	    
-	    Entry entry = parser.parse(client.getFeedReader(response));
-		entry.toString();
-	    return response;
+		String response = this.client.batch(request).getEntity(String.class);
+		
+		return this.parseResponse(response, batchId, changeSetId);
+	}
+	
+	
+	private BatchResult parseResponse(String response, String batchId, String changeSetId) {
+		String[] lines = response.split("\n");
+		BatchResult result = new BatchResult();
+		result.setBatchId(batchId);
+		result.setChangesetId(changeSetId);
+		
+		int top = lines.length;
+		
+		for (int i = 0; i < top; i++) {
+			String line = lines[i];
+			if (lines[i].startsWith("HTTP/1.1")) {
+				BatchPartResponse part = new BatchPartResponse();
+				part.setStatus(this.getStatusCode(line));
+
+				StringBuilder message = new StringBuilder();
+				
+				for (; i < top; i++) {
+					line = lines[i];
+					if (line.startsWith("--batch")) {
+						break;
+					}
+					message.append(line).append("\n");
+				}
+				part.setMessage(message.toString());
+				result.addPartResponse(part);
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getStatusCode(String line) {
+		Matcher matcher = STATUS_CODE_PATTERN.matcher(line);
+		if (matcher.find() && matcher.groupCount() > 1) {
+			return Integer.valueOf(matcher.group(1));
+		}
+		
+		throw new IllegalArgumentException(String.format("Could not extract status code from %s", line));
 	}
 	
 

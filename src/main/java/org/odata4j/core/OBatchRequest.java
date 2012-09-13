@@ -13,8 +13,7 @@ import java.util.List;
 
 import org.odata4j.format.FormatType;
 import org.odata4j.producer.resources.BatchBodyPart;
-
-import com.sun.jersey.api.client.ClientResponse;
+import org.odata4j.producer.resources.BatchResult;
 
 /**
  * 
@@ -23,6 +22,6 @@ import com.sun.jersey.api.client.ClientResponse;
  */
 public interface OBatchRequest {
 
-	public ClientResponse execute(List<BatchBodyPart> parts, FormatType formatType);
+	public BatchResult execute(List<BatchBodyPart> parts, FormatType formatType);
 	
 }

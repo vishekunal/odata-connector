@@ -126,7 +126,7 @@ class ODataJerseyClient extends AbstractODataClient {
   }
   
   public ClientResponse batch(ODataClientRequest request) {
-	  return this.doRequest(this.getFormatType(), request, 201);
+	  return this.doRequest(this.getFormatType(), request, 202);
   }
 
   public boolean updateEntity(ODataClientRequest request) {

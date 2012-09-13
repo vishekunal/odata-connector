@@ -10,3 +10,10 @@
 <!-- BEGIN_INCLUDE(odata:delete-entity) -->
     <odata:delete-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata"/>
 <!-- END_INCLUDE(odata:delete-entity) -->
+<!-- BEGIN_INCLUDE(odata:batch) -->
+    <odata:batch config-ref="odata">
+    	<odata:create-entity entitySetName="ProductSet" config-ref="odata"/>
+    	<odata:update-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata"/>
+    	<odata:delete-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata"/>
+    </odata:batch>
+<!-- END_INCLUDE(odata:batch) -->

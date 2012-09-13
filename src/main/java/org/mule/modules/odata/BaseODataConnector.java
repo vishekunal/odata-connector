@@ -60,6 +60,7 @@ import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
 import org.odata4j.jersey.consumer.JerseyClientUtil;
 import org.odata4j.producer.resources.BatchBodyPart;
+import org.odata4j.producer.resources.BatchResult;
 import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 
 /**
@@ -192,12 +193,11 @@ public abstract class BaseODataConnector {
      * @param message the current mule message
      * @param entity an object representing the entity
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
-     * @return an instance of {@link org.odata4j.core.OEntity} representing the entity just created on the OData set
      */
     @Processor
 	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
-    public OEntity createEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName) {
+    public void createEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName) {
     	OCreateRequest<OEntity> request = this.consumer.createEntity(this.getEntitySetName(entity, entitySetName));
     	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
     	
@@ -205,18 +205,68 @@ public abstract class BaseODataConnector {
 			request.properties(properties);
 		}
 		
-		List<BatchBodyPart> batchParts = message.getInvocationProperty(BATCH_PARTS);
-		
-		if (batchParts != null) {
-			batchParts.add(this.toBatchBodyPart(request.getRawRequest()));
-			return null;
+		if (!this.isBatchOperation(message, request.getRawRequest())) {
+			request.execute();
 		}
-		
-		return request.execute();
     }
     
+    /**
+     * Updates an entity represented by a pojo on the OData service
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-entity}
+     * 
+     * @param message the current mule message
+     * @param entity an object representing the entity
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
+     */
+    @Processor
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
-    public void batch(MuleMessage message, List<NestedProcessor> processors) {
+    public void updateEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
+    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
+    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
+
+		if (properties != null) {
+			request.properties(properties);
+		}
+		
+		if (!this.isBatchOperation(message, request.getRawRequest())) {
+			request.execute();
+		}
+    }
+    
+    
+    /**
+     * Deletes an entity represented by a pojo on the OData service
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-entity}
+     * 
+     * @param message the current mule message
+     * @param entity an object representing the entity
+     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
+     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
+     */
+    @Processor
+	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
+    @Inject
+    public void deleteEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
+    	this.consumer.deleteEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
+    }
+    
+    /**
+     * Executes a series of insert/update/deletes in a batch.
+     * 
+     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:batch}
+     * 
+     * @param message the current mule message
+     * @param processors nested processors where each individual operation is to be performed
+     * @return an instance of {@link org.odata4j.producer.resources.BatchResult}
+     */
+    @Processor
+    @InvalidateConnectionOn(exception=NotAuthorizedException.class)
+    @Inject
+    public BatchResult batch(MuleMessage message, List<NestedProcessor> processors) {
     	List<BatchBodyPart> parts = new ArrayList<BatchBodyPart>();
     	message.setInvocationProperty(BATCH_PARTS, parts);
 
@@ -234,12 +284,26 @@ public abstract class BaseODataConnector {
     		if (logger.isDebugEnabled()) {
     			logger.debug("No parts where added by nested processors, exiting without sending a batch request");
     		}
-    		return;
+    		throw new IllegalArgumentException("");
     	}
     	
     	OBatchRequest request = this.consumer.createBatch();
-    	request.execute(parts, this.formatType);
+    	BatchResult result = request.execute(parts, this.formatType);
 		
+    	return result;
+    }
+    
+    
+    private boolean isBatchOperation(MuleMessage message, ODataClientRequest request) {
+    	List<BatchBodyPart> batchParts = message.getInvocationProperty(BATCH_PARTS);
+    	
+    	if (batchParts != null) {
+    		batchParts.add(this.toBatchBodyPart(request));
+    		return true;
+    	}
+    	
+    	return false;
+    	
     }
     
     private BatchBodyPart toBatchBodyPart(ODataClientRequest request) {
@@ -251,45 +315,6 @@ public abstract class BaseODataConnector {
 		part.setUri(request.getUrl());
 		
 		return part;
-    }
-    
-    
-    /**
-     * Updates an entity represented by a pojo on the OData service
-     * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-entity}
-     * 
-     * @param entity an object representing the entity
-     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
-     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
-     */
-    @Processor
-	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
-    public void updateEntity(@Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
-    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
-
-		if (properties != null) {
-			request.properties(properties);
-		}
-		
-		request.execute();
-    }
-    
-    
-    /**
-     * Deletes an entity represented by a pojo on the OData service
-     * 
-     * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-entity}
-     * 
-     * @param entity an object representing the entity
-     * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
-     * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
-     */
-    @Processor
-	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
-    public void deleteEntity(@Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
-    	this.consumer.deleteEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
     }
     
 	private Object extractValue(Object pojo, String keyAttribute) {
