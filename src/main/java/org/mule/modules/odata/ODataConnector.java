@@ -38,17 +38,17 @@ public class ODataConnector extends BaseODataConnector {
 	/**
 	 * Creates a new OData Consumer
 	 * 
-	 * @param username used to authenticate
-	 * @param password used to authenticate
+	 * @param user used to authenticate
+	 * @param pass used to authenticate
 	 * @param serviceUri The OData service root uri
 	 */
 	@Connect
-	public void connect(@ConnectionKey String username, @Password String password, @Optional String serviceUri) throws ConnectionException {
+	public void connect(@ConnectionKey String user, @Password String pass, @Optional String serviceUri) throws ConnectionException {
 		serviceUri = StringUtils.isEmpty(serviceUri) ? this.getBaseServiceUri() : serviceUri;
 		synchronized (this) {
-			this.setConsumer(this.getConsumerFactory().newConsumer(serviceUri, getFormatType(), username, password, getConsumerVersion()));
+			this.setConsumer(this.getConsumerFactory().newConsumer(serviceUri, getFormatType(), user, pass, getConsumerVersion()));
 		}
-		this.username = username;
+		this.username = user;
 	}
 	
 	/**
