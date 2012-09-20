@@ -255,7 +255,7 @@ public abstract class BaseODataConnector {
     }
     
     /**
-     * Executes a series of insert/update/deletes in a batch.
+     * Executes a series of insert/update/deletes in a batch grouped in one changeset.
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:batch}
      * 
