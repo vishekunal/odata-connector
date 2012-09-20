@@ -13,11 +13,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.core4j.Enumerable;
+import org.mule.modules.odata.odata4j.extensions.ConsumerBatchRequest;
+import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
 import org.odata4j.consumer.AbstractODataConsumer;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.EntitySetInfo;
-import org.odata4j.core.OBatchRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.ODataVersion;
 import org.odata4j.core.OEntity;
@@ -232,7 +233,6 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   @Override
   public OBatchRequest createBatch() {
 	  return new ConsumerBatchRequest(client, this.getServiceRootUri());
-	  
   }
 
   /* (non-Javadoc)

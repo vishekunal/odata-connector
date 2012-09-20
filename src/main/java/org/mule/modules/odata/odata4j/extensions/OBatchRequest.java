@@ -7,7 +7,7 @@
  * LICENSE.txt file.
  */
 
-package org.odata4j.core;
+package org.mule.modules.odata.odata4j.extensions;
 
 import java.util.List;
 

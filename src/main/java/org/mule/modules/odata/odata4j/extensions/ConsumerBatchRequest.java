@@ -7,7 +7,7 @@
  * LICENSE.txt file.
  */
 
-package org.odata4j.jersey.consumer;
+package org.mule.modules.odata.odata4j.extensions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,14 +17,17 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.lang.StringUtils;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;
-import org.odata4j.core.OBatchRequest;
 import org.odata4j.format.FormatType;
+import org.odata4j.jersey.consumer.ODataJerseyClient;
 import org.odata4j.producer.resources.BatchBodyPart;
 import org.odata4j.producer.resources.BatchPartResponse;
 import org.odata4j.producer.resources.BatchResult;
-import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
+
+import com.sun.jersey.multipart.BodyPart;
+import com.sun.jersey.multipart.MultiPart;
 
 /**
  * 
@@ -34,6 +37,7 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 public class ConsumerBatchRequest implements OBatchRequest {
 	
 	private static final Pattern STATUS_CODE_PATTERN = Pattern.compile("HTTP/1.1 ([\\d]*) [\\w]*");
+	private static final String NEW_LINE = "\r\n";
 	private final String baseUrl;
 	private final ODataJerseyClient client;
 	
@@ -48,42 +52,48 @@ public class ConsumerBatchRequest implements OBatchRequest {
 		String batchId = Guid.randomGuid().toString();
 		String changeSetId = Guid.randomGuid().toString();
 		
-		StringBuilder entity = new StringBuilder();
-		int i = 0;
-				
-		for (BatchBodyPart part : parts) {
-			entity.append("\n--batch_").append(batchId);
-			
-			if (part.getHttpMethod() != HTTP_METHOD.GET) {
-				
-				entity.append("\nContent-Type: multipart/mixed; boundary=changeset_").append(changeSetId)
-						.append("\nContent-Length: ").append(part.getEntity().length())
-						.append("\n\n--changeset(").append(changeSetId).append(")");
-			}
-			
-			entity.append("\nContent-Type: application/http")
-						.append("\nContent-Transfer-Encoding: binary\n\n")
-						.append(part.getHttpMethod().name()).append(" ").append(part.getUri()).append(" HTTP/1.1")
-						.append("\nContent-ID: ").append(++i)
-						.append("\nContent-Type: ").append(formatType == FormatType.ATOM ? MediaType.APPLICATION_ATOM_XML : MediaType.APPLICATION_JSON)
-						.append("\nContent-Lenght: ").append(part.getEntity().length())
-						.append("\n").append(part.getEntity());
-		}
+		MultiPart multiPart = new MultiPart();
+		BodyPart changeSetBodyPart = new BodyPart();
+		multiPart.bodyPart(changeSetBodyPart);
 		
-		entity.append("\n\n--changeset(").append(changeSetId).append(")--")
-				.append("\n--batch(").append(batchId).append(")--");
+		changeSetBodyPart.type(this.mediaType("multipart", "mixed", "changeset_" + changeSetId));
+		changeSetBodyPart.getHeaders().putSingle("Content-Transfer-Encoding", "binary");
+		changeSetBodyPart.setEntity(StringUtils.EMPTY);
+		
+		for (BatchBodyPart batchPart : parts) {
+			BodyPart bodyPart = new BodyPart();
+			multiPart.bodyPart(bodyPart);
+			
+			StringBuilder entityBuilder = new StringBuilder()
+				.append(batchPart.getHttpMethod().name()).append(" ").append(batchPart.getUri()).append(" HTTP/1.1")
+				.append(NEW_LINE).append("Content-Type: ").append(formatType == FormatType.ATOM ? MediaType.APPLICATION_ATOM_XML : MediaType.APPLICATION_JSON)
+				.append(NEW_LINE).append("Content-Lenght: ").append(batchPart.getEntity().length())
+				.append(NEW_LINE).append(NEW_LINE).append(batchPart.getEntity());
+			
+			String entity = entityBuilder.toString();
+			bodyPart.setEntity(entity);
+			
+			bodyPart.getHeaders().putSingle("Content-Lenght", String.valueOf(entity.length()));
+			bodyPart.getHeaders().putSingle("Content-Transfer-Encoding", "binary");
+			bodyPart.type(new MediaType("application", "http"));
+		}
 		
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Content-Type", "multipart/mixed; boundary=batch_" + batchId);
 		
-		
-		ODataClientRequest request = new ODataClientRequest("POST", this.baseUrl + "$batch", headers, null, entity.toString());
+		ODataClientRequest request = new ODataClientRequest("POST", this.baseUrl + "$batch", headers, null, multiPart);
 
 		String response = this.client.batch(request).getEntity(String.class);
 		
 		return this.parseResponse(response, batchId, changeSetId);
 	}
 	
+	private MediaType mediaType(String type, String subType, String boundary) {
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("boundary", boundary);
+
+		return new MediaType(type, subType, parameters);
+	}
 	
 	private BatchResult parseResponse(String response, String batchId, String changeSetId) {
 		String[] lines = response.split("\n");
@@ -118,7 +128,7 @@ public class ConsumerBatchRequest implements OBatchRequest {
 	
 	private int getStatusCode(String line) {
 		Matcher matcher = STATUS_CODE_PATTERN.matcher(line);
-		if (matcher.find() && matcher.groupCount() > 1) {
+		if (matcher.find() && matcher.groupCount() > 0) {
 			return Integer.valueOf(matcher.group(1));
 		}
 		

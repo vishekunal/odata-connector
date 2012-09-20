@@ -12,8 +12,8 @@ package org.odata4j.consumer;
 import java.util.List;
 
 import org.core4j.Enumerable;
+import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
 import org.odata4j.core.EntitySetInfo;
-import org.odata4j.core.OBatchRequest;
 import org.odata4j.core.OCreateRequest;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OEntityGetRequest;

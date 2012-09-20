@@ -58,8 +58,9 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.MultiPart;
 
-class ODataJerseyClient extends AbstractODataClient {
+public class ODataJerseyClient extends AbstractODataClient {
 
   private final OClientBehavior[] requiredBehaviors = new OClientBehavior[] { OClientBehaviors.methodTunneling("MERGE") }; // jersey hates MERGE, tunnel through POST
   private final OClientBehavior[] behaviors;
@@ -183,7 +184,7 @@ class ODataJerseyClient extends AbstractODataClient {
     }
 
     WebResource webResource = JerseyClientUtil.resource(client, request.getUrl(), behaviors);
-
+    
     // set query params
     for (Map.Entry<String, String> entry : request.getQueryParams().entrySet()) {
       webResource = webResource.queryParam(entry.getKey(), entry.getValue());
@@ -204,20 +205,24 @@ class ODataJerseyClient extends AbstractODataClient {
       dumpHeaders(request, webResource, b);
 
     // request body
-    String entity = null;
+    Object entity = null;
     Object payload = request.getPayload();
     String contentType = request.getHeaders().get(ODataConstants.Headers.CONTENT_TYPE);
     
     if (payload != null) {
     	
     	if (payload instanceof String) {
-    		entity = (String) payload;
+    		entity = payload;
     		
     		if (StringUtils.isBlank(contentType)) {
     			contentType = reqType == FormatType.JSON ? MediaType.APPLICATION_JSON : MediaType.APPLICATION_ATOM_XML;
     		}
     		
-    	} else {
+    	} else if (payload instanceof MultiPart) {
+    		entity = payload;
+    	}
+    	
+    	else {
     		FormatWriter<Object> fw = JerseyClientUtil.newFormatWriter(request, this.getFormatType(), this.version);
     		entity = JerseyClientUtil.toString(request, fw);
     		
@@ -233,7 +238,6 @@ class ODataJerseyClient extends AbstractODataClient {
     	// allow the client to override the default format writer content-type
       b.entity(entity, contentType);
     }
-
     // execute request
     ClientResponse response = b.method(request.getMethod(), ClientResponse.class);
 

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.ws.rs.ext.RuntimeDelegate;
 
+import org.mule.modules.odata.odata4j.extensions.BatchMultipartWriter;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.core.ODataVersion;
@@ -58,7 +59,10 @@ public class JerseyClientUtil {
 
   public static Client newClient(JerseyClientFactory clientFactory, OClientBehavior[] behaviors) {
     DefaultClientConfig cc = new DefaultClientConfig();
+    
     cc.getSingletons().add(new StringProvider2());
+    cc.getSingletons().add(new BatchMultipartWriter());
+    
     if (behaviors != null) {
       for (OClientBehavior behavior : behaviors)
       {
@@ -91,6 +95,7 @@ public class JerseyClientUtil {
         }
       }
     }
+    
     return resource;
   }
   
