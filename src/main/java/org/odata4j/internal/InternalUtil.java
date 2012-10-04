@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.HttpHeaders;
 
+import org.apache.commons.lang.StringUtils;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;
@@ -303,6 +304,10 @@ public class InternalUtil {
       version = ODataVersion.parse(str[0]);
     }
     return version;
+  }
+  
+  public static String chooseServiceUri(String base, String override) {
+	  return StringUtils.isEmpty(override) ? base : override;
   }
 
 }

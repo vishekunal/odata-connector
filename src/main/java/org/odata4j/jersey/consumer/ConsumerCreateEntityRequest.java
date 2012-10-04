@@ -51,9 +51,9 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
 
   @SuppressWarnings("unchecked")
   @Override
-  public T execute() {
+  public T execute(String url) {
 
-    ODataClientRequest request = this.getRawRequest();
+    ODataClientRequest request = this.getRawRequest(url);
     ClientResponse response = client.createEntity(request);
 
     ODataVersion version = InternalUtil.getDataServiceVersion(response.getHeaders().getFirst(ODataConstants.Headers.DATA_SERVICE_VERSION));
@@ -69,12 +69,12 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
    * @see org.odata4j.core.OCreateRequest#getRawRequest()
    */
   @Override
-  public ODataClientRequest getRawRequest() {
+  public ODataClientRequest getRawRequest(String serviceUri) {
 	  
 	  EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 	  Entry entry = client.createRequestEntry(ees, null, props, links);
 	  
-	  StringBuilder url = new StringBuilder(serviceRootUri);
+	  StringBuilder url = new StringBuilder(InternalUtil.chooseServiceUri(this.serviceRootUri, serviceUri));
 	  if (parent != null) {
 		  url.append(InternalUtil.getEntityRelId(parent))
 		  .append("/")

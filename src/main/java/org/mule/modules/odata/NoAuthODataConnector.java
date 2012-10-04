@@ -28,6 +28,7 @@ public class NoAuthODataConnector extends BaseODataConnector {
 	@Start
 	public void init() {
 		this.setConsumer(this.getConsumerFactory().newConsumer(this.getBaseServiceUri(), this.getFormatType(), null, null, this.getConsumerVersion()));
+		
 	}
 	
 }

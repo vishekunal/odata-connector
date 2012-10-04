@@ -58,6 +58,8 @@ import org.odata4j.edm.EdmSimpleType;
 import org.odata4j.edm.EdmType;
 import org.odata4j.format.FormatType;
 import org.odata4j.format.FormatWriter;
+import org.odata4j.internal.InternalUtil;
+import org.odata4j.jersey.consumer.ConsumerDeleteEntityRequest;
 import org.odata4j.jersey.consumer.JerseyClientUtil;
 import org.odata4j.producer.resources.BatchBodyPart;
 import org.odata4j.producer.resources.BatchResult;
@@ -197,7 +199,13 @@ public abstract class BaseODataConnector {
     @Processor
 	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
-    public void createEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName) {
+    public void createEntity(MuleMessage message,
+    						@Optional @Default("#[payload]") Object entity,
+    						@Optional String entitySetName,
+    						@Optional String serviceUri) {
+    	
+    	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
+    	
     	OCreateRequest<OEntity> request = this.consumer.createEntity(this.getEntitySetName(entity, entitySetName));
     	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
     	
@@ -205,8 +213,8 @@ public abstract class BaseODataConnector {
 			request.properties(properties);
 		}
 		
-		if (!this.isBatchOperation(message, request.getRawRequest())) {
-			request.execute();
+		if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
+			request.execute(serviceUri);
 		}
     }
     
@@ -223,7 +231,14 @@ public abstract class BaseODataConnector {
     @Processor
 	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
-    public void updateEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
+    public void updateEntity(MuleMessage message,
+    						@Optional @Default("#[payload]") Object entity,
+    						@Optional String entitySetName,
+    						String keyAttribute,
+    						@Optional String serviceUri) {
+    	
+    	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
+    	
     	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
     	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
 
@@ -231,8 +246,8 @@ public abstract class BaseODataConnector {
 			request.properties(properties);
 		}
 		
-		if (!this.isBatchOperation(message, request.getRawRequest())) {
-			request.execute();
+		if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
+			request.execute(serviceUri);
 		}
     }
     
@@ -250,8 +265,22 @@ public abstract class BaseODataConnector {
     @Processor
 	@InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
-    public void deleteEntity(MuleMessage message, @Optional @Default("#[payload]") Object entity, @Optional String entitySetName, String keyAttribute) {
-    	this.consumer.deleteEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
+    public void deleteEntity(
+    						MuleMessage message,
+    						@Optional @Default("#[payload]") Object entity,
+    						@Optional String entitySetName,
+    						String keyAttribute,
+    						@Optional String serviceUri) {
+    	
+    	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
+    	
+    	ConsumerDeleteEntityRequest request = this.consumer.deleteEntity(
+    												this.getEntitySetName(entity, entitySetName),
+    												this.extractValue(entity, keyAttribute));
+    	
+    	if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
+			request.execute(serviceUri);
+		}
     }
     
     /**
@@ -267,9 +296,12 @@ public abstract class BaseODataConnector {
     @InvalidateConnectionOn(exception=NotAuthorizedException.class)
     @Inject
     public BatchResult batch(MuleMessage message, List<NestedProcessor> processors) {
-    	List<BatchBodyPart> parts = new ArrayList<BatchBodyPart>();
+    	return this.batch(message, processors, new ArrayList<BatchBodyPart>());
+    }
+    
+    public BatchResult batch(MuleMessage message, List<NestedProcessor> processors, List<BatchBodyPart> parts) {
     	message.setInvocationProperty(BATCH_PARTS, parts);
-
+    	
     	try {
     		for (NestedProcessor processor : processors) {
     			processor.process();
@@ -289,10 +321,10 @@ public abstract class BaseODataConnector {
     	
     	OBatchRequest request = this.consumer.createBatch();
     	BatchResult result = request.execute(parts, this.formatType);
-		
+    	
     	return result;
+    	
     }
-    
     
     private boolean isBatchOperation(MuleMessage message, ODataClientRequest request) {
     	List<BatchBodyPart> batchParts = message.getInvocationProperty(BATCH_PARTS);

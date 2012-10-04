@@ -13,8 +13,9 @@ import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
+import org.odata4j.internal.InternalUtil;
 
-class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
+public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
   ConsumerDeleteEntityRequest(ODataJerseyClient client, String serviceRootUri,
       EdmDataServices metadata, String entitySetName, OEntityKey key) {
@@ -23,17 +24,23 @@ class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
   @Override
   public Void execute() {
-    getClient().deleteEntity(this.getRawRequest());
+	  return this.execute(null);
+  }
+  
+  public Void execute(String serviceUri) {
+    getClient().deleteEntity(this.getRawRequest(serviceUri));
     return null;
   }
   
-  /**
-   * @see org.odata4j.core.OEntityRequest#getRawRequest()
-   */
+
   @Override
   public ODataClientRequest getRawRequest() {
+	  return this.getRawRequest(null);
+  }
+  
+  public ODataClientRequest getRawRequest(String serviceUri) {
 	  String path = Enumerable.create(getSegments()).join("/");
-	  ODataClientRequest request = ODataClientRequest.delete(getServiceRootUri() + path);
+	  ODataClientRequest request = ODataClientRequest.delete(InternalUtil.chooseServiceUri(this.getServiceRootUri(), serviceUri) + path);
 	  
 	  return request;
   }

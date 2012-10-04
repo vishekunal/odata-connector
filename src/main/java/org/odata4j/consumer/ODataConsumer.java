@@ -9,8 +9,6 @@
 
 package org.odata4j.consumer;
 
-import java.util.List;
-
 import org.core4j.Enumerable;
 import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
 import org.odata4j.core.EntitySetInfo;
@@ -27,8 +25,7 @@ import org.odata4j.core.OQueryRequest;
 import org.odata4j.core.ORelatedEntitiesLink;
 import org.odata4j.core.ORelatedEntityLink;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.format.FormatType;
-import org.odata4j.producer.resources.BatchBodyPart;
+import org.odata4j.jersey.consumer.ConsumerDeleteEntityRequest;
 
 public interface ODataConsumer {
 
@@ -335,7 +332,7 @@ public interface ODataConsumer {
    * @param entity  the entity identity
    * @return a new entity-request builder
    */
-  OEntityRequest<Void> deleteEntity(OEntityId entity);
+  ConsumerDeleteEntityRequest deleteEntity(OEntityId entity);
 
   /**
    * Deletes an existing entity.
@@ -345,7 +342,7 @@ public interface ODataConsumer {
    * @param keyValue  the entity identity key value
    * @return a new entity-request builder
    */
-  OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue);
+  ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue);
 
   /**
    * Deletes an existing entity.
@@ -355,7 +352,7 @@ public interface ODataConsumer {
    * @param key  the entity identity key
    * @return a new entity-request builder
    */
-  OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key);
+  ConsumerDeleteEntityRequest deleteEntity(String entitySetName, OEntityKey key);
 
   /**
    * Call a server-side function (also known as a service operation).

@@ -57,7 +57,7 @@ public interface OModifyRequest<T> {
   * 
   * @return success or failure
   */
-  boolean execute();
+  boolean execute(String serviceUri);
 
   /**
    * Select a new modification entity by navigating to a referenced entity in a child collection.
@@ -72,6 +72,6 @@ public interface OModifyRequest<T> {
    * Returns the low level, not yet executed OData request
    * @return
    */
-  public ODataClientRequest getRawRequest();
+  public ODataClientRequest getRawRequest(String serviceUri);
 
 }

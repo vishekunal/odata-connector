@@ -273,7 +273,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#deleteEntity(org.odata4j.core.OEntityId)
    */
   @Override
-  public OEntityRequest<Void> deleteEntity(OEntityId entity) {
+  public ConsumerDeleteEntityRequest deleteEntity(OEntityId entity) {
     return deleteEntity(entity.getEntitySetName(), entity.getEntityKey());
   }
 
@@ -281,7 +281,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#deleteEntity(java.lang.String, java.lang.Object)
    */
   @Override
-  public OEntityRequest<Void> deleteEntity(String entitySetName, Object keyValue) {
+  public ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue) {
     return deleteEntity(entitySetName, OEntityKey.create(keyValue));
   }
 
@@ -289,7 +289,7 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#deleteEntity(java.lang.String, org.odata4j.core.OEntityKey)
    */
   @Override
-  public OEntityRequest<Void> deleteEntity(String entitySetName, OEntityKey key) {
+  public ConsumerDeleteEntityRequest deleteEntity(String entitySetName, OEntityKey key) {
     return new ConsumerDeleteEntityRequest(client, this.getServiceRootUri(), getMetadata(), entitySetName, key);
   }
 

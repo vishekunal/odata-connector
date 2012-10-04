@@ -12,6 +12,7 @@ package org.odata4j.jersey.consumer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.core4j.Enumerable;
 import org.core4j.Predicate1;
 import org.odata4j.consumer.AbstractConsumerEntityPayloadRequest;
@@ -51,8 +52,8 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
   }
 
   @Override
-  public boolean execute() {
-	ODataClientRequest request = this.getRawRequest();
+  public boolean execute(String serviceUri) {
+	ODataClientRequest request = this.getRawRequest(serviceUri);
     boolean rt = client.updateEntity(request);
     return rt;
   }
@@ -61,7 +62,9 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
    * @see org.odata4j.core.OModifyRequest#getRawRequest()
    */
   @Override
-  public ODataClientRequest getRawRequest() {
+  public ODataClientRequest getRawRequest(String serviceUri) {
+	  serviceUri = StringUtils.isBlank(serviceUri) ? this.serviceRootUri : serviceUri;
+	  
 	  List<OProperty<?>> requestProps = props;
 	  if (updateRoot != null) {
 		  OEntity updateRootEntity = (OEntity) updateRoot;
@@ -82,7 +85,7 @@ class ConsumerEntityModificationRequest<T> extends AbstractConsumerEntityPayload
 	  
 	  String path = Enumerable.create(segments).join("/");
 	  
-	  ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceRootUri + path, entry) : ODataClientRequest.merge(serviceRootUri + path, entry);
+	  ODataClientRequest request = updateRoot != null ? ODataClientRequest.put(serviceUri + path, entry) : ODataClientRequest.merge(serviceUri + path, entry);
 	  
 	  return request;
   }

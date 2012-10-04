@@ -88,7 +88,7 @@ public interface OCreateRequest<T> {
    * 
    * @return newly created entity
    */
-  T execute();
+  T execute(String serviceUri);
 
   /**
    * Returns a locally-built entity and does not send the create-request
@@ -104,6 +104,6 @@ public interface OCreateRequest<T> {
    * Returns the low level, not yet executed OData request
    * @return
    */
-  public ODataClientRequest getRawRequest();
+  public ODataClientRequest getRawRequest(String serviceUri);
 
 }
