@@ -30,8 +30,8 @@ public class ODataConsumerFactoryImpl implements ODataConsumerFactory {
 	 */
 	@Override
 	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password, ODataVersion version) {
-		Builder builder = ODataJerseyConsumer.newBuilder(baseServiceUri, version).setFormatType(formatType);
 		OClientBehavior auth = this.getAuthBehaviour(username, password);
+		Builder builder = ODataJerseyConsumer.newBuilder(baseServiceUri, version).setFormatType(formatType);
 		
 		if (auth != null) {
 			builder.setClientBehaviors(auth);
