@@ -339,7 +339,6 @@ public class ODataConnector {
     		if (logger.isDebugEnabled()) {
     			logger.debug("No parts where added by nested processors, exiting without sending a batch request");
     		}
-    		throw new IllegalArgumentException("");
     	}
     	
     	OBatchRequest request = this.consumer.createBatch();
