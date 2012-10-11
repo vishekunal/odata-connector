@@ -585,7 +585,7 @@ public class ODataConnector {
 	}
 
 	public void setBaseServiceUri(String baseServiceUri) {
-		this.baseServiceUri = baseServiceUri;
+		this.baseServiceUri = InternalUtil.addSuffixSlashIfNeccesary(baseServiceUri);
 	}
 
 	public String getUsername() {
