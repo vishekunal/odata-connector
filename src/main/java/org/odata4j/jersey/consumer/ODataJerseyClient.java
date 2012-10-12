@@ -58,6 +58,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.PartialRequestBuilder;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;
 
 public class ODataJerseyClient extends AbstractODataClient {
@@ -242,8 +243,19 @@ public class ODataJerseyClient extends AbstractODataClient {
     	 StringBuilder builder = new StringBuilder();
     	 builder.append("executing OData request:\n")
     	 		.append("url: ").append(webResource.toString())
-    	 		.append("\nentity: ").append(entity)
-    	 		.append("\ncontent-type: ").append(contentType)
+    	 		.append("\nentity: ");
+    	 
+    	 
+    	 if (entity instanceof MultiPart) {
+    		 MultiPart mp = (MultiPart) entity;
+    		 for (BodyPart part : mp.getBodyParts()) {
+    			builder.append("\n").append(part.getEntity()); 
+    		 }
+    	 } else {
+    		 builder.append(entity);
+    	 }
+    	 
+    	 builder.append("\ncontent-type: ").append(contentType)
     	 		.append("\nquery-params: ").append(request.getQueryParams())
     	 		.append("\nheaders: ").append(request.getHeaders());
     	 		

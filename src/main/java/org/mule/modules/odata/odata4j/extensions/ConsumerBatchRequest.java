@@ -9,6 +9,7 @@
 
 package org.mule.modules.odata.odata4j.extensions;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,10 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Logger;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;
 import org.odata4j.format.FormatType;
@@ -36,6 +40,7 @@ import com.sun.jersey.multipart.MultiPart;
  */
 public class ConsumerBatchRequest implements OBatchRequest {
 	
+	private static final Logger logger = Logger.getLogger(ConsumerBatchRequest.class);
 	private static final Pattern STATUS_CODE_PATTERN = Pattern.compile("HTTP/1.1 ([\\d]*) [\\w]*");
 	private static final String NEW_LINE = "\r\n";
 	private final String baseUrl;
@@ -82,10 +87,17 @@ public class ConsumerBatchRequest implements OBatchRequest {
 		headers.put("Content-Type", "multipart/mixed; boundary=batch_" + batchId);
 		
 		ODataClientRequest request = new ODataClientRequest("POST", this.baseUrl + "$batch", headers, null, multiPart);
-
-		String response = this.client.batch(request).getEntity(String.class);
 		
-		return this.parseResponse(response, batchId, changeSetId);
+		try {
+			String response = this.client.batch(request).getEntity(String.class);
+			return this.parseResponse(response, batchId, changeSetId);
+		} finally {
+			try {
+				multiPart.close();
+			} catch (IOException e) {
+				logger.warn("exception caught closing Multipart: " + e.getMessage());
+			}
+		}
 	}
 	
 	private MediaType mediaType(String type, String subType, String boundary) {
