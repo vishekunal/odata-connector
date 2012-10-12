@@ -237,6 +237,19 @@ public class ODataJerseyClient extends AbstractODataClient {
     	
     	// allow the client to override the default format writer content-type
       b.entity(entity, contentType);
+      
+      if (logger.isDebugEnabled()) {
+    	 StringBuilder builder = new StringBuilder();
+    	 builder.append("executing OData request:\n")
+    	 		.append("url: ").append(webResource.toString())
+    	 		.append("\nentity: ").append(entity)
+    	 		.append("\ncontent-type: ").append(contentType)
+    	 		.append("\nquery-params: ").append(request.getQueryParams())
+    	 		.append("\nheaders: ").append(request.getHeaders());
+    	 		
+    	 logger.debug(builder.toString());
+      }
+      
     }
     // execute request
     ClientResponse response = b.method(request.getMethod(), ClientResponse.class);
