@@ -72,7 +72,7 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData Connector with Authentication", minMuleVersion = "3.3", configElementName="config")
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData Cloud Connector", minMuleVersion = "3.3", configElementName="config")
 public class ODataConnector {
 
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
@@ -165,7 +165,8 @@ public class ODataConnector {
      *
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-entities}
      *
-     * @param returnClass the canonical class name for the pojo instances to be returned
+     * @param returnClass the canonical class name for the pojo instances to be returned. If none especified then generic OEntity
+     * 		  class will be returned. OEntity is a pojo which represents the set's metadata and allows for browsing
      * @param entitySetName the name of the set to be read
      * @param filter an OData filtering expression. If not provided, no filtering occurs (see http://www.odata.org/developers/protocols/uri-conventions#FilterSystemQueryOption)
      * @param orderBy the ordering expression. If not provided, no ordering occurs (see http://www.odata.org/developers/protocols/uri-conventions#OrderBySystemQueryOption(
@@ -178,7 +179,7 @@ public class ODataConnector {
     @Processor
     @SuppressWarnings("unchecked")
     public List<Object> getEntities(
-    						String returnClass,
+    						@Default("org.odata4j.core.OEntity") @Optional String returnClass,
     						String entitySetName,
     						@Optional String filter,
     						@Optional String orderBy,
@@ -187,13 +188,7 @@ public class ODataConnector {
     						@Optional Integer top,
     						@Optional String select) {
     	
-    	Class<?> clazz = null;
-    	
-    	try {
-    		clazz = Class.forName(returnClass);
-    	} catch (ClassNotFoundException e) {
-    		throw new IllegalArgumentException(String.format("return class %s not found in classpath", returnClass), e);
-    	}
+    	Class<?> clazz = this.getClass(returnClass);
     	
     	
     	OQueryRequest<?> request =  this.consumer.getEntities(clazz, entitySetName)
@@ -201,7 +196,6 @@ public class ODataConnector {
 										.orderBy(orderBy)
 										.expand(expand)
 										.select(select);
-    	
     	if (skip != null) {
     		request.skip(skip);
     	}
@@ -209,10 +203,10 @@ public class ODataConnector {
     	if (top != null) {
     		request.top(top);
     	}
-    	
+
     	return (List<Object>) request.execute().toList();
     }
-    
+
     /**
      * Inserts an entity from an input pojo
      * 
@@ -437,6 +431,17 @@ public class ODataConnector {
 		}
 		
 		return result;
+	}
+    
+	private Class<?> getClass(String returnClass) {
+		Class<?> clazz = null;
+    	
+    	try {
+    		clazz = Class.forName(returnClass);
+    	} catch (ClassNotFoundException e) {
+    		throw new IllegalArgumentException(String.format("return class %s not found in classpath", returnClass), e);
+    	}
+		return clazz;
 	}
     
     private OProperty<?> toOProperty(String key, Object value) {

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="odata-demo">
+    <global-element type="http://www.mulesoft.org/schema/mule/odata/config" name="OData Cloud Connector" entity-id="OData Cloud Connector#1">
+        <properties>
+            <property value="OData_Cloud_Connector" name="name"/>
+            <property value="1" name="auxiliary;index"/>
+            <property name="consumerFactory-ref"/>
+            <property value="http://odata.netflix.com/Catalog/" name="baseServiceUri"/>
+            <property name="password"/>
+            <property name="username"/>
+            <property name="consumerVersion"/>
+            <property name="formatType"/>
+            <property name="namingFormat"/>
+            <property value="1" name="auxiliary;index"/>
+            <property value="1" name="auxiliary;index"/>
+            <property value="1" name="auxiliary;index"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="odata-demoFlow1" entity-id="cc042f9c-8e79-472c-9187-e26a4340e8ce">
+        <properties>
+            <property name="processingStrategy2"/>
+            <property name="processingStrategy"/>
+            <property value="2" name="auxiliary;index"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property value="2" name="auxiliary;index"/>
+            <property value="2" name="auxiliary;index"/>
+            <property value="2" name="auxiliary;index"/>
+        </properties>
+        <lane isChoiceOtherwiseLane="false" index="0" hadOnlyOneElement="false" entity-id="compartment-lane#1">
+            <endpoint message-exchange-pattern="OneWay" direction="Inbound" type="http://www.mulesoft.org/schema/mule/http/endpoint" name="HTTP" entity-id="HTTP#1">
+                <properties>
+                    <property value="true" name="auxiliary;erased;contentType"/>
+                    <property value="true" name="auxiliary;erased;mimeType"/>
+                    <property value="8081" name="port"/>
+                    <property value="localhost" name="host"/>
+                    <property value="" name="businessEventsLabel"/>
+                    <property value="http://www.mulesoft.org/schema/mule/http/endpoint" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="false" name="keep-alive"/>
+                    <property value="" name="contentType"/>
+                    <property value="false" name="disableTransportTransformer"/>
+                    <property value="" name="password"/>
+                    <property value="request-response" name="exchange-pattern"/>
+                    <property value="false" name="tracking:enable-default-events"/>
+                    <property value="" name="ref"/>
+                    <property value="" name="transformer-refs"/>
+                    <property value="" name="httpLabel"/>
+                    <property value="" name="address"/>
+                    <property value="true" name="auxiliary;erased;encoding"/>
+                    <property value="people" name="path"/>
+                    <property value="" name="encoding"/>
+                    <property value="" name="responseTransformer-refs"/>
+                    <property value="" name="user"/>
+                    <property value="" name="mimeType"/>
+                    <property value="" name="responseTimeout"/>
+                    <property value="" name="connector-ref"/>
+                    <property value="3" name="auxiliary;index"/>
+                    <property name="updated"/>
+                </properties>
+                <description></description>
+            </endpoint>
+            <pattern type="http://www.mulesoft.org/schema/mule/odata/odata-connector" name="OData Cloud Connector" entity-id="OData Cloud Connector#2">
+                <properties>
+                    <property value="org.mule.modules.odata.demo.model.Actor" name="returnClass"/>
+                    <property value="" name="orderBy"/>
+                    <property value="" name="select"/>
+                    <property value="http://www.mulesoft.org/schema/mule/odata/get-entities" name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute"/>
+                    <property value="" name="expand"/>
+                    <property value="People" name="entitySetName"/>
+                    <property value="" name="skip"/>
+                    <property value="OData_Cloud_Connector" name="config-ref"/>
+                    <property value="substringof('#[message.inboundProperties['name']]',Name)" name="filter"/>
+                    <property value="" name="top"/>
+                    <property value="4" name="auxiliary;index"/>
+                    <property name="updated"/>
+                </properties>
+                <description></description>
+            </pattern>
+            <splitter index="5" type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#1">
+                <properties>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property value="5" name=";INDEX"/>
+                    <property-collection name="49eade64-3d1d-4031-88e2-03ebe37d219e">
+                        <property value="true" name="choice.otherwise"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                    <property-collection name="3249ce1a-b0da-4715-875f-f8495c8b7281">
+                        <property value="#[payload.isEmpty()]" name="choice.expression"/>
+                        <property-collection name="choice.attributes">
+                            <property value="#[payload.isEmpty()]" name="expression"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+                <pattern type="org.mule.tooling.ui.modules.core.pattern.cbr" name="Choice" entity-id="Choice#2">
+                    <properties>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property value="5" name=";INDEX"/>
+                        <property-collection name="49eade64-3d1d-4031-88e2-03ebe37d219e">
+                            <property value="true" name="choice.otherwise"/>
+                            <property-collection name="choice.attributes"/>
+                        </property-collection>
+                        <property-collection name="3249ce1a-b0da-4715-875f-f8495c8b7281">
+                            <property value="#[payload.isEmpty()]" name="choice.expression"/>
+                            <property-collection name="choice.attributes">
+<property value="#[payload.isEmpty()]" name="expression"/>
+                            </property-collection>
+                        </property-collection>
+                    </properties>
+                </pattern>
+                <compartment entity-id="compartment#1">
+                    <lane isChoiceOtherwiseLane="false" index="7" hadOnlyOneElement="true" entity-id="3249ce1a-b0da-4715-875f-f8495c8b7281">
+                        <pattern type="http://www.mulesoft.org/schema/mule/core/set-payload" name="Set Payload" entity-id="Set Payload#1">
+                            <properties>
+<property value="no results" name="value"/>
+<property value="7" name="auxiliary;index"/>
+<property name="updated"/>
+                            </properties>
+                            <description></description>
+                        </pattern>
+                    </lane>
+                    <lane isChoiceOtherwiseLane="true" index="9" hadOnlyOneElement="false" entity-id="49eade64-3d1d-4031-88e2-03ebe37d219e">
+                        <pattern type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" name="Object to JSON" entity-id="10646c27-93cf-4587-80d8-85d5b5ce6e34"/>
+                    </lane>
+                </compartment>
+            </splitter>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>
