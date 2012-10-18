@@ -77,7 +77,7 @@ public class ODataConnector {
 
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
 	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
-	private static final String BATCH_PARTS = "ODATA_CONNECTOR_BATCH_BODY_PARTS";
+	public static final String BATCH_PARTS = "ODATA_CONNECTOR_BATCH_BODY_PARTS";
 	
 	/**
 	 * An instance of {@link org.mule.modules.odata.factory.ODataConsumerFactory}
@@ -354,7 +354,7 @@ public class ODataConnector {
     	
     }
     
-    private BatchBodyPart toBatchBodyPart(ODataClientRequest request) {
+    protected BatchBodyPart toBatchBodyPart(ODataClientRequest request) {
     	BatchBodyPart part = new BatchBodyPart();
 		FormatWriter<Object> formatWriter = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
 		
