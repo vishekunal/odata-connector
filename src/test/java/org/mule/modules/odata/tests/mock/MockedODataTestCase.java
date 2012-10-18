@@ -9,7 +9,6 @@
 
 package org.mule.modules.odata.tests.mock;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -38,7 +37,6 @@ import org.odata4j.core.OProperty;
 import org.odata4j.format.FormatType;
 import org.odata4j.jersey.consumer.ConsumerDeleteEntityRequest;
 import org.odata4j.producer.resources.BatchBodyPart;
-import org.odata4j.producer.resources.BatchPartResponse;
 
 /**
  * 
