@@ -18,9 +18,7 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.Guid;

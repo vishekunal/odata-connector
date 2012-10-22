@@ -247,7 +247,8 @@ public class ODataJerseyClient extends AbstractODataClient {
     	 
     	 
     	 if (entity instanceof MultiPart) {
-    		 MultiPart mp = (MultiPart) entity;
+    		@SuppressWarnings("resource") 
+			MultiPart mp = (MultiPart) entity;
     		 for (BodyPart part : mp.getBodyParts()) {
     			builder.append("\n").append(part.getEntity()); 
     		 }

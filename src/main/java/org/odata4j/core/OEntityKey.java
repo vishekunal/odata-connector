@@ -362,7 +362,7 @@ public class OEntityKey {
           }).orderBy().join(",");
     }
 
-    return "(" + keyValue + ")";
+    return String.format("(guid%s)", keyValue);
   }
 
   private static String keyString(Object keyValue, boolean includePropName) {

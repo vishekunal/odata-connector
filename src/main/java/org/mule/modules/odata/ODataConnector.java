@@ -9,15 +9,13 @@
 
 package org.mule.modules.odata;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -36,6 +34,8 @@ import org.mule.api.transport.PropertyScope;
 import org.mule.modules.odata.factory.ODataConsumerFactory;
 import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
 import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
+import org.mule.modules.odata.reflection.FieldDescriptor;
+import org.mule.modules.odata.reflection.ReflectionUtils;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
@@ -78,6 +78,8 @@ public class ODataConnector {
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
 	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
 	public static final String BATCH_PARTS = "ODATA_CONNECTOR_BATCH_BODY_PARTS";
+	
+	private Map<Class<?>, Collection<FieldDescriptor>> propertiesCache = new HashMap<Class<?>, Collection<FieldDescriptor>>();
 	
 	/**
 	 * An instance of {@link org.mule.modules.odata.factory.ODataConsumerFactory}
@@ -405,21 +407,35 @@ public class ODataConnector {
     }
      
     private <T> List<OProperty<?>> populateODataProperties(T object) {
-		Collection<PropertyDescriptor> properties = this.describe(object.getClass());
+		Class<?> clazz = object.getClass();
+    	Collection<FieldDescriptor> fields = this.propertiesCache.get(clazz);
 		
-		if (properties.isEmpty()) {
+		if (fields == null) {
+			fields = ReflectionUtils.getFieldDescriptors(object);
+			this.propertiesCache.put(clazz, fields);
+		}
+		
+		if (fields.isEmpty()) {
 			return null;
 		}
 		
-		List<OProperty<?>> result = new ArrayList<OProperty<?>>(properties.size());
+		List<OProperty<?>> result = new ArrayList<OProperty<?>>(fields.size());
 		
 		try {
-			for (PropertyDescriptor prop : properties) {
-				Object value = prop.getReadMethod().invoke(object, (Object[]) null);
+			for (FieldDescriptor field : fields) {
+				Object value = field.getValue(object);
+				String name = field.getName();
 				
 				if (value != null) {
-					String key = this.namingFormat.toOData(prop.getName());
-					OProperty<?> property = this.toOProperty(key, value);
+					String key = this.namingFormat.toOData(name);
+					
+					OProperty<?> property = null;
+					
+					if (field.isGuid()) {
+						property = OProperties.guid(key, Guid.fromString(value.toString()));
+					} else {
+						property = this.toOProperty(key, value);
+					}
 					
 					if (property != null) {
 						result.add(property);
@@ -427,9 +443,9 @@ public class ODataConnector {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("Error populating odata properties", e);
 		}
-		
+
 		return result;
 	}
     
@@ -514,24 +530,6 @@ public class ODataConnector {
     }
     
     
-	private <T> Collection<PropertyDescriptor> describe(Class<T> clazz) {
-		BeanInfo info = null;
-		try {
-			info = Introspector.getBeanInfo(clazz);
-		} catch (IntrospectionException e) {
-			throw new RuntimeException();
-		}
-		
-		Collection<PropertyDescriptor> descriptors = new ArrayList<PropertyDescriptor>(info.getPropertyDescriptors().length);
-		for (PropertyDescriptor property : info.getPropertyDescriptors()) {
-			if (property.getReadMethod() != null && property.getWriteMethod() != null) {
-				descriptors.add(property);
-			}
-		}
-		
-		return descriptors;
-	}
-	
 	private boolean isSimpleType(Object value) {
 		return this.isSimpleType(value.getClass());
 	}
