@@ -163,7 +163,10 @@ public class ODataConnector {
 	}
 	
     /**
-     * Reads entities from an specified set and returns it as a list of pojos
+     * Reads entities from an specified set and returns it as a list of pojos. You can optionally provide a
+     * returnClass parameter which will allow you to get the result as a list of pojos (as long as that
+     * class is compliant with the Bean contract). If you don't specify it, you'll get a list of generic
+     *  ${org.odata4j.core.OEntity} objects.
      *
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-entities}
      *
@@ -210,7 +213,10 @@ public class ODataConnector {
     }
 
     /**
-     * Inserts an entity from an input pojo
+     * Inserts an entity from an input pojo.
+     * 
+     * To specify the entitie's id, your pojo can rather have an attribute of type
+     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-entity}
      * 
@@ -242,6 +248,9 @@ public class ODataConnector {
     
     /**
      * Updates an entity represented by a pojo on the OData service
+     * 
+     * To specify the entitie's id, your pojo can rather have an attribute of type
+     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-entity}
      * 
@@ -276,6 +285,9 @@ public class ODataConnector {
     
     /**
      * Deletes an entity represented by a pojo on the OData service
+     * 
+     * To specify the entitie's id, your pojo can rather have an attribute of type
+     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-entity}
      * 
