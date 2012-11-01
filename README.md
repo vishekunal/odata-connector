@@ -6,7 +6,7 @@ This connector will allow you to perform CRUD operations against an OData servic
 Installation and Usage
 ----------------------
 
-For information about usage and installation you can check our documentation at http://mulesoft.github.com/odata-module/mule/odata-module.html
+For information about usage and installation you can check our documentation at http://mulesoft.github.com/odata-connector
 
 Reporting Issues
 ----------------
