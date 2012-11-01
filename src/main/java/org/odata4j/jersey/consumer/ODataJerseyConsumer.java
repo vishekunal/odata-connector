@@ -231,8 +231,8 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
   }
   
   @Override
-  public OBatchRequest createBatch() {
-	  return new ConsumerBatchRequest(client, this.getServiceRootUri());
+  public OBatchRequest createBatch(String url) {
+	  return new ConsumerBatchRequest(client, url);
   }
 
   /* (non-Javadoc)

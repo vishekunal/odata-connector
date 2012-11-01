@@ -329,7 +329,11 @@ public class ODataConnector {
      */
     @Processor
     @Inject
-    public BatchResult batch(MuleMessage message, List<NestedProcessor> processors) {
+    public BatchResult batch(
+    			MuleMessage message,
+    			@Optional String serviceUri,
+    			List<NestedProcessor> processors) {
+    	
     	List<BatchBodyPart> parts = new ArrayList<BatchBodyPart>();
     	message.setInvocationProperty(BATCH_PARTS, parts);
     	
@@ -349,7 +353,8 @@ public class ODataConnector {
     		}
     	}
     	
-    	OBatchRequest request = this.consumer.createBatch();
+    	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
+    	OBatchRequest request = this.consumer.createBatch(serviceUri);
     	BatchResult result = request.execute(parts, this.formatType);
     	
     	return result;

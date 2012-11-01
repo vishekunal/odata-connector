@@ -285,7 +285,7 @@ public interface ODataConsumer {
    * Creates a request to perform batch operations
    * 
    */
-  public OBatchRequest createBatch();
+  public OBatchRequest createBatch(String url);
 
   /**
    * Modifies an existing entity using update semantics.

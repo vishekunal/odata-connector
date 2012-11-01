@@ -289,7 +289,7 @@ public class MockedODataTestCase extends TestCase {
 		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenReturn(deleteRequest);
 		
 		final OBatchRequest batchRequest = Mockito.mock(OBatchRequest.class);
-		Mockito.when(this.consumer.createBatch()).thenReturn(batchRequest);
+		Mockito.when(this.consumer.createBatch(Mockito.anyString())).thenReturn(batchRequest);
 		
 		Mockito.doAnswer(new Answer<Void>() {
 			
@@ -334,7 +334,7 @@ public class MockedODataTestCase extends TestCase {
 			
 		};
 		
-		this.connector.batch(message, Arrays.asList(proc));
+		this.connector.batch(message, "", Arrays.asList(proc));
 		
 		Mockito.verify(createRequest, Mockito.never()).execute(Mockito.anyString());
 		Mockito.verify(updateRequest, Mockito.never()).execute(Mockito.anyString());
