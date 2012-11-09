@@ -375,9 +375,16 @@ public class ODataConnector {
     
     protected BatchBodyPart toBatchBodyPart(ODataClientRequest request) {
     	BatchBodyPart part = new BatchBodyPart();
-		FormatWriter<Object> formatWriter = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
+    	String payload = null;
+    	
+    	if (request.getPayload() instanceof String) {
+    		payload = (String) request.getPayload();
+    	} else {
+    		FormatWriter<Object> formatWriter = JerseyClientUtil.newFormatWriter(request, this.formatType, this.consumerVersion);
+    		payload = JerseyClientUtil.toString(request, formatWriter);
+    	}
 		
-		part.setEntity(JerseyClientUtil.toString(request, formatWriter));
+		part.setEntity(payload);
 		part.setHttpMethod(HTTP_METHOD.valueOf(request.getMethod()));
 		part.setUri(request.getUrl());
 		

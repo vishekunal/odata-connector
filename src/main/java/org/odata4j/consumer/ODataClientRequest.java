@@ -12,6 +12,7 @@ package org.odata4j.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.odata4j.consumer.behaviors.OClientBehavior;
 import org.odata4j.format.Entry;
 import org.odata4j.format.SingleLink;
@@ -164,7 +165,7 @@ public class ODataClientRequest {
    * @return a new request builder
    */
   public static ODataClientRequest delete(String url) {
-    return new ODataClientRequest("DELETE", url, null, null, null);
+    return new ODataClientRequest("DELETE", url, null, null, StringUtils.EMPTY);
   }
 
   /**
