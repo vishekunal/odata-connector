@@ -225,7 +225,7 @@ public class MockedODataTestCase extends TestCase {
 	public void testDelete() {
 		final ConsumerDeleteEntityRequest request = Mockito.mock(ConsumerDeleteEntityRequest.class);
 		
-		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<ConsumerDeleteEntityRequest>() {
+		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenAnswer(new Answer<ConsumerDeleteEntityRequest>() {
 			
 			@Override
 			public ConsumerDeleteEntityRequest answer(InvocationOnMock invocation) throws Throwable {
@@ -244,7 +244,7 @@ public class MockedODataTestCase extends TestCase {
 		final String url = "kakak/";
 		final ConsumerDeleteEntityRequest request = Mockito.mock(ConsumerDeleteEntityRequest.class);
 		
-		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenReturn(request);
+		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(request);
 		this.connector.deleteEntity(message, people, null, "id", url);
 		Mockito.verify(request, Mockito.times(1)).execute(Mockito.eq(url));
 	}
@@ -254,7 +254,7 @@ public class MockedODataTestCase extends TestCase {
 		final String setname = "sss";
 		final ConsumerDeleteEntityRequest request = Mockito.mock(ConsumerDeleteEntityRequest.class);
 		
-		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<ConsumerDeleteEntityRequest>() {
+		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenAnswer(new Answer<ConsumerDeleteEntityRequest>() {
 			
 			@Override
 			public ConsumerDeleteEntityRequest answer(InvocationOnMock invocation) throws Throwable {
@@ -286,7 +286,7 @@ public class MockedODataTestCase extends TestCase {
 		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(updateRequest);
 		
 		final ConsumerDeleteEntityRequest deleteRequest = Mockito.mock(ConsumerDeleteEntityRequest.class);
-		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenReturn(deleteRequest);
+		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(deleteRequest);
 		
 		final OBatchRequest batchRequest = Mockito.mock(OBatchRequest.class);
 		Mockito.when(this.consumer.createBatch(Mockito.anyString())).thenReturn(batchRequest);
