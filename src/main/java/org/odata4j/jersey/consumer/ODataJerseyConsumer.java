@@ -283,8 +283,10 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#deleteEntity(java.lang.String, java.lang.Object)
    */
   @Override
-  public ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue) {
-    return deleteEntity(entitySetName, OEntityKey.create(keyValue));
+  public ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue, boolean keyIsGuid) {
+	  OEntityKey key = OEntityKey.create(keyValue);
+	  key.setIsGuid(keyIsGuid);
+	  return deleteEntity(entitySetName, key);
   }
 
   /* (non-Javadoc)

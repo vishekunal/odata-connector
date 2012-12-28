@@ -9,7 +9,6 @@
 
 package org.mule.modules.odata;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -19,7 +18,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.beanutils.PropertyUtilsBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.mule.api.MuleMessage;
@@ -76,7 +74,6 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 public class ODataConnector {
 
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
-	private static final PropertyUtilsBean propertyUtils = new PropertyUtilsBean();
 	public static final String BATCH_PARTS = "ODATA_CONNECTOR_BATCH_BODY_PARTS";
 	
 	private Map<Class<?>, Collection<FieldDescriptor>> propertiesCache = new HashMap<Class<?>, Collection<FieldDescriptor>>();
@@ -314,9 +311,13 @@ public class ODataConnector {
     	
     	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
     	
+    	Map<String, OProperty<?>> properties = this.populateODataProperties(entity);
+    	OProperty<?> key = properties.get(keyAttribute);
+    	
     	ConsumerDeleteEntityRequest request = this.consumer.deleteEntity(
     												this.getEntitySetName(entity, entitySetName),
-    												this.extractValue(entity, keyAttribute));
+    												key.getValue(),
+    												key.getType().equals(EdmSimpleType.GUID));
     	
     	if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
 			request.execute(serviceUri);
@@ -395,37 +396,6 @@ public class ODataConnector {
 		part.setUri(request.getUrl());
 		
 		return part;
-    }
-    
-	private Object extractValue(Object pojo, String keyAttribute) {
-		assert pojo != null : "pojo cannot be null";
-		assert !StringUtils.isBlank(keyAttribute) : "ket attribute cannot be null";
-		
-		Object keyValue = null;
-    	
-		try {
-    		
-    		keyValue = propertyUtils.getProperty(pojo, this.namingFormat.toJava(keyAttribute));
-    		
-    		if (keyValue == null) {
-    			throw new IllegalStateException(String.format("the key attribute %s on pojo of class %s cannot be null", keyAttribute, pojo.getClass().getCanonicalName()));
-    		}
-    		
-    		return keyValue;
-    		
-    	} catch (IllegalAccessException e) {
-    		this.handleReadPropertyException(pojo, keyAttribute, e);
-    	} catch (NoSuchMethodException e) {
-    		this.handleReadPropertyException(pojo, keyAttribute, e);
-    	} catch (InvocationTargetException e) {
-    		this.handleReadPropertyException(pojo, keyAttribute, e);
-    	}
-		
-		return keyValue;
-	}
-    
-    private void handleReadPropertyException(Object pojo, String propertyName, Exception e) {
-    	throw new RuntimeException(String.format("Could not read property %s on pojo of class %s", propertyName, pojo.getClass().getCanonicalName()), e);
     }
     
     private String getEntitySetName(Object pojo, String entitySetName) {

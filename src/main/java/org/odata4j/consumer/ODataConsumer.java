@@ -341,9 +341,10 @@ public interface ODataConsumer {
    *
    * @param entitySetName  the entity identity entity-set name
    * @param keyValue  the entity identity key value
+   * @param keyIsGuid  true if the key is a guid
    * @return a new entity-request builder
    */
-  ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue);
+  ConsumerDeleteEntityRequest deleteEntity(String entitySetName, Object keyValue, boolean keyIsGuid);
 
   /**
    * Deletes an existing entity.
