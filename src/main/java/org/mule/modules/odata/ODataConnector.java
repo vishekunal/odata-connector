@@ -235,10 +235,10 @@ public class ODataConnector {
     	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
     	
     	OCreateRequest<OEntity> request = this.consumer.createEntity(this.getEntitySetName(entity, entitySetName));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
+    	Map<String, OProperty<?>> properties = this.populateODataProperties(entity);
     	
 		if (properties != null) {
-			request.properties(properties);
+			request.properties(properties.values());
 		}
 		
 		if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
@@ -270,11 +270,17 @@ public class ODataConnector {
     	
     	serviceUri = InternalUtil.chooseServiceUri(this.baseServiceUri, serviceUri);
     	
-    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(this.getEntitySetName(entity, entitySetName), this.extractValue(entity, keyAttribute));
-    	Collection<OProperty<?>> properties = this.populateODataProperties(entity);
-
+    	Map<String, OProperty<?>> properties = this.populateODataProperties(entity);
+    	
+    	OProperty<?> key = properties.get(keyAttribute);
+    	
+    	OModifyRequest<OEntity> request = this.consumer.mergeEntity(
+    											this.getEntitySetName(entity, entitySetName),
+    											key.getValue(),
+    											key.getType().equals(EdmSimpleType.GUID));
+    	
 		if (properties != null) {
-			request.properties(properties);
+			request.properties(properties.values());
 		}
 		
 		if (!this.isBatchOperation(message, request.getRawRequest(serviceUri))) {
@@ -430,7 +436,7 @@ public class ODataConnector {
     	return StringUtils.isBlank(entitySetName) ? pojo.getClass().getSimpleName() + "Set" : entitySetName; 
     }
      
-    private <T> List<OProperty<?>> populateODataProperties(T object) {
+    private <T> Map<String, OProperty<?>> populateODataProperties(T object) {
 		Class<?> clazz = object.getClass();
     	Collection<FieldDescriptor> fields = this.propertiesCache.get(clazz);
 		
@@ -443,7 +449,7 @@ public class ODataConnector {
 			return null;
 		}
 		
-		List<OProperty<?>> result = new ArrayList<OProperty<?>>(fields.size());
+		Map<String, OProperty<?>> result = new HashMap<String, OProperty<?>>();
 		
 		try {
 			for (FieldDescriptor field : fields) {
@@ -462,7 +468,7 @@ public class ODataConnector {
 					}
 					
 					if (property != null) {
-						result.add(property);
+						result.put(name, property);
 					}
 				}
 			}
@@ -501,7 +507,10 @@ public class ODataConnector {
     }
     
     private OProperty<List<OProperty<?>>> toObjectProperty(String key, Object value) {
-    	return OProperties.complex(key, this.getEdmComplexType(key, value), this.populateODataProperties(value));
+    	return OProperties.complex(key,
+    			this.getEdmComplexType(key, value),
+    			new ArrayList<OProperty<?>>(this.populateODataProperties(value).values())
+    			);
     }
     
     private <T> OProperty<OCollection<? extends OObject>> toCollectionProperty(String key, Collection<T> collection) {
@@ -518,7 +527,10 @@ public class ODataConnector {
 			if (this.isSimpleType(item)) {
 				builder.add(OSimpleObjects.create(EdmSimpleType.forJavaType(item.getClass()), item));
 			} else {
-				builder.add(OComplexObjects.create(this.getEdmComplexType(key, item), this.populateODataProperties(item)));
+				builder.add(OComplexObjects.create(
+							this.getEdmComplexType(key, item),
+							new ArrayList<OProperty<?>>(this.populateODataProperties(item).values())
+						));
 			}
 					
 		}

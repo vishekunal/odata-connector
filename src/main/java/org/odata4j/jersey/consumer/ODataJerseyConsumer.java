@@ -256,8 +256,10 @@ public class ODataJerseyConsumer extends AbstractODataConsumer {
    * @see org.odata4j.jersey.consumer.ODataConsumer#mergeEntity(java.lang.String, java.lang.Object)
    */
   @Override
-  public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue) {
-    return mergeEntity(entitySetName, OEntityKey.create(keyValue));
+  public OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue, boolean keyIsGuid) {
+	  OEntityKey key = OEntityKey.create(keyValue);
+	  key.setIsGuid(keyIsGuid);
+	  return mergeEntity(entitySetName, key);
   }
 
   /* (non-Javadoc)

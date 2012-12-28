@@ -311,9 +311,10 @@ public interface ODataConsumer {
    *
    * @param entitySetName  the entity identity entity-set name
    * @param keyValue  the entity identity key value
+   * @param keyIsGuid true if the key is a guid
    * @return a new modification-request builder
    */
-  OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue);
+  OModifyRequest<OEntity> mergeEntity(String entitySetName, Object keyValue, boolean keyIsGuid);
 
   /**
    * Modifies an existing entity using merge semantics.

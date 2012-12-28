@@ -47,11 +47,11 @@ public class OEntityKey {
   }
 
   private final Object[] values;
-  private final String keyString;
+  private String keyString;
+  private boolean isGuid = true;
 
   private OEntityKey(Object[] values) {
     this.values = values;
-    this.keyString = keyString(values);
   }
 
   /**
@@ -212,7 +212,10 @@ public class OEntityKey {
    * @return the standard key-string
    */
   public String toKeyString() {
-    return keyString;
+	  if (keyString == null) {
+		  this.keyString = keyString(values);
+	  }
+	  return keyString;
   }
 
   /**
@@ -348,7 +351,7 @@ public class OEntityKey {
         }
       }).toSet();
 
-  private static String keyString(Object[] values) {
+  private String keyString(Object[] values) {
 
     String keyValue;
     if (values.length == 1) {
@@ -362,7 +365,7 @@ public class OEntityKey {
           }).orderBy().join(",");
     }
 
-    return String.format("(guid%s)", keyValue);
+    return String.format("(%s%s)", (isGuid ? "guid" : ""), keyValue);
   }
 
   private static String keyString(Object keyValue, boolean includePropName) {
@@ -378,5 +381,15 @@ public class OEntityKey {
     LiteralExpression expr = Expression.literal(keyValue);
     return Expression.asFilterString(expr);
   }
+
+	public boolean isGuid() {
+		return isGuid;
+	}
+	
+	public void setIsGuid(boolean isGuid) {
+		this.isGuid = isGuid;
+}
+  
+  
 
 }

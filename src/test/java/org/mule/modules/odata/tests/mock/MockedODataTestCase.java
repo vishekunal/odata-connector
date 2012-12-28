@@ -158,7 +158,7 @@ public class MockedODataTestCase extends TestCase {
 	public void testUpdateWithInferedSetNameAndBaseUrl() {
 		final OModifyRequest<OEntity> request = Mockito.mock(OModifyRequest.class);
 		
-		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<OModifyRequest<OEntity>>() {
+		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenAnswer(new Answer<OModifyRequest<OEntity>>() {
 			
 			@Override
 			public OModifyRequest<OEntity> answer(InvocationOnMock invocation) throws Throwable {
@@ -197,7 +197,7 @@ public class MockedODataTestCase extends TestCase {
 	public void testUpdateWithCustomUrl() {
 		final String customUrl = "alalaa/";
 		final OModifyRequest<OEntity> request = Mockito.mock(OModifyRequest.class);
-		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any())).thenReturn(request);
+		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(request);
 				
 		this.connector.updateEntity(message, people, null, "id", customUrl);
 		Mockito.verify(request, Mockito.times(1)).execute(Mockito.eq(customUrl));
@@ -209,7 +209,7 @@ public class MockedODataTestCase extends TestCase {
 		final String customSetname = "alalaa";
 		final OModifyRequest<OEntity> request = Mockito.mock(OModifyRequest.class);
 			
-		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any())).thenAnswer(new Answer<OModifyRequest<OEntity>>() {
+		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenAnswer(new Answer<OModifyRequest<OEntity>>() {
 			
 			@Override
 			public OModifyRequest<OEntity> answer(InvocationOnMock invocation) throws Throwable {
@@ -283,7 +283,7 @@ public class MockedODataTestCase extends TestCase {
 		Mockito.when(this.consumer.createEntity(Mockito.anyString())).thenReturn(createRequest);
 		
 		final OModifyRequest<OEntity> updateRequest = Mockito.mock(OModifyRequest.class);
-		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any())).thenReturn(updateRequest);
+		Mockito.when(this.consumer.mergeEntity(Mockito.anyString(), Mockito.any(), Mockito.anyBoolean())).thenReturn(updateRequest);
 		
 		final ConsumerDeleteEntityRequest deleteRequest = Mockito.mock(ConsumerDeleteEntityRequest.class);
 		Mockito.when(this.consumer.deleteEntity(Mockito.anyString(), Mockito.any())).thenReturn(deleteRequest);
