@@ -70,7 +70,7 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData Cloud Connector", minMuleVersion = "3.3", configElementName="config")
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", minMuleVersion = "3.3", configElementName="config")
 public class ODataConnector {
 
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
