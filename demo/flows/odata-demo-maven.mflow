@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="odata-demo-maven">
+    <global-element name="OData" type="http://www.mulesoft.org/schema/mule/odata/config" entity-id="OData#1">
+        <properties>
+            <property name="formatType"/>
+            <property name="username"/>
+            <property name="namingFormat"/>
+            <property name="baseServiceUri" value="http://odata.netflix.com/Catalog/"/>
+            <property name="name" value="OData_Cloud_Connector"/>
+            <property name="consumerFactory-ref"/>
+            <property name="consumerVersion"/>
+            <property name="password"/>
+            <property name="auxiliary;index" value="1"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="odata-demoFlow1" entity-id="50455bfb-638c-4bf3-b41f-3decd3d40eb9">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="tracking:enable-default-events"/>
+            <property name="auxiliary;index" value="2"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="RequestResponse" name="HTTP" type="http://www.mulesoft.org/schema/mule/http/endpoint" entity-id="HTTP#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="port" value="${http.port}"/>
+                    <property name="auxiliary;erased;mimeType" value="true"/>
+                    <property name="contentType" value=""/>
+                    <property name="password" value=""/>
+                    <property name="tracking:enable-default-events" value="false"/>
+                    <property name="exchange-pattern" value="request-response"/>
+                    <property name="updated"/>
+                    <property name="auxiliary;erased;encoding" value="true"/>
+                    <property name="path" value="people"/>
+                    <property name="encoding" value=""/>
+                    <property name="responseTransformer-refs" value=""/>
+                    <property name="auxiliary;index" value="3"/>
+                    <property name="mimeType" value=""/>
+                    <property name="responseTimeout" value="10000"/>
+                    <property name="auxiliary;erased;contentType" value="true"/>
+                    <property name="host" value="localhost"/>
+                    <property name="businessEventsLabel" value=""/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/http/endpoint"/>
+                    <property name="keep-alive" value="false"/>
+                    <property name="disableTransportTransformer" value="false"/>
+                    <property name="ref" value=""/>
+                    <property name="transformer-refs" value=""/>
+                    <property name="httpLabel" value=""/>
+                    <property name="address" value=""/>
+                    <property name="user" value=""/>
+                    <property name="connector-ref" value=""/>
+                </properties>
+                <description></description>
+            </endpoint>
+            <pattern name="OData Cloud Connector" type="http://www.mulesoft.org/schema/mule/odata/odata-connector" entity-id="OData#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass" value="com.mulesoft.modules.odata.demo.model.Actor"/>
+                    <property name="orderBy"/>
+                    <property name="select"/>
+                    <property name="org.mule.tooling.ui.modules.core.widgets.meta.ModeAttribute" value="http://www.mulesoft.org/schema/mule/odata/get-entities"/>
+                    <property name="expand"/>
+                    <property name="entitySetName" value="People"/>
+                    <property name="skip"/>
+                    <property name="config-ref" value="OData_Cloud_Connector"/>
+                    <property name="filter" value="substringof('#[message.inboundProperties['name']]',Name)"/>
+                    <property name="auxiliary;index" value="4"/>
+                    <property name="top"/>
+                </properties>
+            </pattern>
+            <splitter index="5" name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name=";INDEX" value="5"/>
+                    <property-collection name="b566503c-93b4-4156-ab1b-2cd17e2524e5">
+                        <property name="choice.otherwise" value="true"/>
+                        <property-collection name="choice.attributes"/>
+                    </property-collection>
+                    <property-collection name="24448b04-2533-4c2f-bcc5-df79c9b36894">
+                        <property name="choice.expression" value="#[payload.isEmpty()]"/>
+                        <property-collection name="choice.attributes">
+                            <property name="expression" value="#[payload.isEmpty()]"/>
+                        </property-collection>
+                    </property-collection>
+                </properties>
+                <pattern name="Choice" type="org.mule.tooling.ui.modules.core.pattern.cbr" entity-id="Choice#2">
+                    <properties>
+                        <property name=";INDEX" value="5"/>
+                        <property-collection name="b566503c-93b4-4156-ab1b-2cd17e2524e5">
+                            <property name="choice.otherwise" value="true"/>
+                            <property-collection name="choice.attributes"/>
+                        </property-collection>
+                        <property-collection name="24448b04-2533-4c2f-bcc5-df79c9b36894">
+                            <property name="choice.expression" value="#[payload.isEmpty()]"/>
+                            <property-collection name="choice.attributes">
+<property name="expression" value="#[payload.isEmpty()]"/>
+                            </property-collection>
+                        </property-collection>
+                    </properties>
+                </pattern>
+                <compartment entity-id="compartment#1">
+                    <lane hadOnlyOneElement="false" index="7" isChoiceOtherwiseLane="false" entity-id="24448b04-2533-4c2f-bcc5-df79c9b36894">
+                        <pattern name="Set Payload" type="http://www.mulesoft.org/schema/mule/core/set-payload" entity-id="Set Payload#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="value" value="no results"/>
+<property name="auxiliary;index" value="7"/>
+                            </properties>
+                        </pattern>
+                    </lane>
+                    <lane hadOnlyOneElement="false" index="9" isChoiceOtherwiseLane="true" entity-id="b566503c-93b4-4156-ab1b-2cd17e2524e5">
+                        <scope name="Processor Chain" type="http://www.mulesoft.org/schema/mule/core/processor-chain" entity-id="Processor Chain#1">
+                            <graphicalData x="0" y="0" width="0" height="0"/>
+                            <properties>
+<property name="auxiliary;index" value="9"/>
+                            </properties>
+                            <compartment entity-id="compartment#2">
+<lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#2">
+    <pattern name="Object to JSON" type="http://www.mulesoft.org/schema/mule/json/object-to-json-transformer" entity-id="Object to JSON#1">
+        <graphicalData x="0" y="0" width="0" height="0"/>
+        <properties>
+            <property name="sourceClass"/>
+            <property name="returnClass"/>
+            <property name="ignoreBadInput"/>
+            <property name="encoding"/>
+            <property name="mapper-ref"/>
+            <property name="mimeType"/>
+            <property name="auxiliary;index" value="10"/>
+        </properties>
+    </pattern>
+</lane>
+                            </compartment>
+                        </scope>
+                    </lane>
+                </compartment>
+            </splitter>
+        </lane>
+    </flow>
+    <description></description>
+</mule-configuration>

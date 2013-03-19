@@ -7,7 +7,7 @@
  * LICENSE.txt file.
  */
 
-package org.mule.modules.odata.demo.model;
+package com.mulesoft.modules.odata.demo.model;
 
 import java.io.Serializable;
 
