@@ -24,6 +24,7 @@ import org.mule.api.MuleMessage;
 import org.mule.api.NestedProcessor;
 import org.mule.api.annotations.Configurable;
 import org.mule.api.annotations.Connector;
+import org.mule.api.annotations.MetaDataSwitch;
 import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.lifecycle.Start;
 import org.mule.api.annotations.param.Default;
@@ -70,7 +71,7 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", minMuleVersion = "3.3", configElementName="config")
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", minMuleVersion = "3.3", configElementName="config", metaData=MetaDataSwitch.OFF)
 public class ODataConnector {
 
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
