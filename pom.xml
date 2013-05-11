@@ -10,17 +10,18 @@
     <parent>
         <groupId>org.mule.tools.devkit</groupId>
         <artifactId>mule-devkit-parent</artifactId>
-        <version>3.4-SNAPSHOT</version>
+        <version>3.4.0</version>
     </parent>
 
     <properties>
         <junit.version>4.9</junit.version>
-        <mule.version>3.3.0</mule.version>
-		<mule.devkit.version>3.4-SNAPSHOT</mule.devkit.version>
+        <mule.version>3.4.0</mule.version>
+		<mule.devkit.version>3.4.0</mule.devkit.version>
         <mockito.version>1.8.2</mockito.version>
         <jdk.version>1.6</jdk.version>
         <category>Community</category>
         <licensePath>LICENSE.md</licensePath>
+        <jersey.version>1.6</jersey.version>
         <devkit.studio.package.skip>false</devkit.studio.package.skip>
     </properties>
     
@@ -38,22 +39,26 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
-			<version>1.1.5</version>
+			<version>${jersey.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
           <groupId>com.sun.jersey.contribs</groupId>
           <artifactId>jersey-multipart</artifactId>
-          <version>1.1.5</version>
+          <version>${jersey.version}</version>
+			<scope>provided</scope>
       </dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>1.1.5</version>
+			<version>${jersey.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
-			<version>1.1.5</version>
+			<version>${jersey.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
