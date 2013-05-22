@@ -306,10 +306,6 @@ public class InternalUtil {
     return version;
   }
   
-  public static String chooseServiceUri(String base, String override) {
-	  return StringUtils.isEmpty(override) ? base : addSuffixSlashIfNeccesary(override);
-  }
-  
   public static String addSuffixSlashIfNeccesary(String url) {
 	  return url.endsWith("/") ? url : url + "/"; 
   }

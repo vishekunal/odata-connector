@@ -1,19 +1,19 @@
 <!-- BEGIN_INCLUDE(odata:get-entities) -->
-    <odata:get-entities returnClass="com.xyz.Product" filter="Price Gt 100" orderBy="Name" select="Name, Price" entitySetName="ProductSet" top="100" />
+    <odata:get-entities returnClass="com.xyz.Product" filter="Price Gt 100" orderBy="Name" select="Name, Price" entitySetName="ProductSet" top="100" config-ref="odata" />
 <!-- END_INCLUDE(odata:get-entities) -->
 <!-- BEGIN_INCLUDE(odata:create-entity) -->
-    <odata:create-entity entitySetName="ProductSet" />
+    <odata:create-entity entitySetName="ProductSet" config-ref="odata" />
 <!-- END_INCLUDE(odata:create-entity) -->
 <!-- BEGIN_INCLUDE(odata:update-entity) -->
-    <odata:update-entity entitySetName="ProductSet" keyAttribute="id" />
+    <odata:update-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata" />
 <!-- END_INCLUDE(odata:update-entity) -->
 <!-- BEGIN_INCLUDE(odata:delete-entity) -->
-    <odata:delete-entity entitySetName="ProductSet" keyAttribute="id" />
+    <odata:delete-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata" />
 <!-- END_INCLUDE(odata:delete-entity) -->
 <!-- BEGIN_INCLUDE(odata:batch) -->
-    <odata:batch >
-    	<odata:create-entity entitySetName="ProductSet" />
-    	<odata:update-entity entitySetName="ProductSet" keyAttribute="id" />
-    	<odata:delete-entity entitySetName="ProductSet" keyAttribute="id" />
+    <odata:batch config-ref="odata">
+    	<odata:create-entity entitySetName="ProductSet" config-ref="odata" />
+    	<odata:update-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata" />
+    	<odata:delete-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata" />
     </odata:batch>
 <!-- END_INCLUDE(odata:batch) -->

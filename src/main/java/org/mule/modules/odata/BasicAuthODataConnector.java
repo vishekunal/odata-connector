@@ -16,33 +16,40 @@ import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Disconnect;
 import org.mule.api.annotations.MetaDataSwitch;
 import org.mule.api.annotations.ValidateConnection;
+import org.mule.api.annotations.display.Password;
 import org.mule.api.annotations.param.ConnectionKey;
 
 /**
  * Connector for consuming OData feeds by performing read, create, update and delete operations.
  * Bath operations are also supported.
  * 
- * This version of the connector does not use any kind of authentication.  
+ * This version of the connector users basic authentication  
  * 
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", minMuleVersion = "3.4", configElementName="config", metaData=MetaDataSwitch.OFF)
-public class ODataConnector extends BaseODataConnector {
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData (Basic Auth)", minMuleVersion = "3.4", configElementName="config-with-basic-auth", metaData=MetaDataSwitch.OFF)
+public class BasicAuthODataConnector extends BaseODataConnector {
+
+	private String user;
 	
 	/**
-	 * @param serviceUri the url of the target OData service
+	 * 
+	 * @param username the authorization username
+	 * @param password the authorization password
+	 * @param serviceURI the URI of the target OData Service
 	 * @throws ConnectionException
 	 */
 	@Connect
-	public void connect(@ConnectionKey String serviceUri) throws ConnectionException {
-		this.setConsumer(this.getConsumerFactory().newConsumer(serviceUri, this.getFormatType(), null, null, this.getConsumerVersion()));
-		this.setBaseServiceUri(serviceUri);
+	public void connect(@ConnectionKey String username, @Password String password, String serviceURI) throws ConnectionException {
+		this.setConsumer(this.getConsumerFactory().newConsumer(serviceURI, this.getFormatType(), username, password, this.getConsumerVersion()));
+		this.setBaseServiceUri(serviceURI);
+		this.user = username;
 	}
 	
 	@ConnectionIdentifier
 	public String getConnectionIdentifier() {
-		return this.getBaseServiceUri();
+		return String.format("%s@%s", this.user, this.getBaseServiceUri());
 	}
 	
 	@ValidateConnection
@@ -54,6 +61,7 @@ public class ODataConnector extends BaseODataConnector {
 	public void disconnect() {
 		this.setConsumer(null);
 		this.setBaseServiceUri(null);
+		this.user = null;
 	}
 	
 }

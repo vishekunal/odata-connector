@@ -74,7 +74,7 @@ class ConsumerCreateEntityRequest<T> extends AbstractConsumerEntityPayloadReques
 	  EdmEntitySet ees = metadata.getEdmEntitySet(entitySetName);
 	  Entry entry = client.createRequestEntry(ees, null, props, links);
 	  
-	  StringBuilder url = new StringBuilder(InternalUtil.chooseServiceUri(this.serviceRootUri, serviceUri));
+	  StringBuilder url = new StringBuilder(serviceUri);
 	  if (parent != null) {
 		  url.append(InternalUtil.getEntityRelId(parent))
 		  .append("/")

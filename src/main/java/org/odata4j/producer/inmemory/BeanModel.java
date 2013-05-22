@@ -26,6 +26,7 @@ import java.util.Set;
 import org.core4j.Enumerable;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
+import org.mule.modules.odata.PropertyNamingFormat;
 import org.odata4j.core.Guid;
 import org.odata4j.core.Throwables;
 
@@ -118,7 +119,13 @@ public class BeanModel {
    * Returns true if the property has a setter.
    */
   public boolean canWrite(String propertyName) {
-    return setters.containsKey(propertyName);
+    for (PropertyNamingFormat format : PropertyNamingFormat.values()) {
+    	if (setters.containsKey(format.toOData(propertyName))) {
+    		return true;
+    	}
+    }
+    
+    return false;
   }
 
   /**
@@ -247,10 +254,15 @@ public class BeanModel {
   }
 
   private Method getSetter(String propertyName) {
-    Method method = setters.get(propertyName);
-    if (method == null)
-      throw new IllegalArgumentException("No setter found for propertyName " + propertyName);
-    return method;
+	  Method method = null;
+	  for (PropertyNamingFormat format : PropertyNamingFormat.values()) {
+    	 method = setters.get(format.toOData(propertyName));
+    	if (method != null) {
+    		return method;
+    	}
+    }
+	  
+	  throw new IllegalArgumentException("No setter found for propertyName " + propertyName);
   }
 
   private static Map<String, Class<?>> computeTypes(Map<String, Method> getters, Map<String, Method> setters) {

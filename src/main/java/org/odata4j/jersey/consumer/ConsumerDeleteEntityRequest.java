@@ -13,7 +13,6 @@ import org.core4j.Enumerable;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.internal.InternalUtil;
 
 public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void> {
 
@@ -40,7 +39,7 @@ public class ConsumerDeleteEntityRequest extends ConsumerEntityRequestBase<Void>
   
   public ODataClientRequest getRawRequest(String serviceUri) {
 	  String path = Enumerable.create(getSegments()).join("/");
-	  ODataClientRequest request = ODataClientRequest.delete(InternalUtil.chooseServiceUri(this.getServiceRootUri(), serviceUri) + path);
+	  ODataClientRequest request = ODataClientRequest.delete(serviceUri + path);
 	  
 	  return request;
   }
