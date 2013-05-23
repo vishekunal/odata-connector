@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:odata="http://www.mulesoft.org/schema/mule/odata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/odata http://www.mulesoft.org/schema/mule/odata/1.0/mule-odata.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    
+    <odata:config name="OData" serviceUri="http://datafeed.medicinehat.ca/v1/data/" consumerVersion="V1" formatType="ATOM">
+        <odata:connection-pooling-profile initialisationPolicy="INITIALISE_ONE" exhaustedAction="WHEN_EXHAUSTED_GROW"/>
+    </odata:config>
+
+    <flow name="test-get-entities">
+        <odata:get-entities config-ref="OData" entitySetName="CityBuildings"  doc:name="OData Cloud Connector" returnClass="org.mule.modules.odata.tests.CityBuilding"/>
+    </flow>
+</mule>

@@ -9,7 +9,6 @@
 
 package org.odata4j.producer.edm;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,7 +48,6 @@ import org.odata4j.edm.EdmProperty.CollectionKind;
 import org.odata4j.edm.EdmSchema;
 import org.odata4j.edm.EdmStructuralType;
 import org.odata4j.edm.EdmType;
-import org.odata4j.format.xml.EdmxFormatWriter;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.CountResponse;
 import org.odata4j.producer.EntitiesResponse;

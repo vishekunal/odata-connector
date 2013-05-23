@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 
 import javax.ws.rs.core.HttpHeaders;
 
-import org.apache.commons.lang.StringUtils;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 import org.core4j.Funcs;

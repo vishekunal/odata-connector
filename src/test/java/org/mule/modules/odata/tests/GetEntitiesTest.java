@@ -9,44 +9,40 @@
 
 package org.mule.modules.odata.tests;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mule.modules.odata.ODataConnector;
-import org.mule.modules.odata.PropertyNamingFormat;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.format.FormatType;
+import org.mule.api.MuleEvent;
+import org.mule.construct.Flow;
+import org.mule.tck.junit4.FunctionalTestCase;
 
 /**
  * 
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-public class GetEntitiesTest {
+public class GetEntitiesTest extends FunctionalTestCase {
 
-	private ODataConnector connector;
-	
-	@Before
-	public void setUp() throws Exception {
-		this.connector = new ODataConnector();
-		this.connector.setFormatType(FormatType.ATOM);
-		this.connector.setNamingFormat(PropertyNamingFormat.LOWER_CAMEL_CASE);
-		this.connector.setConsumerVersion(ODataVersion.V1);
-		this.connector.connect("http://datafeed.medicinehat.ca/v1/data/");
-	};
-	
+	@Override
+	protected String getConfigResources() {
+		return "mule-config.xml";
+	}
 	
 	@Test
-	public void testGetEntities() {
-		List<Object> buildings = this.connector.getEntities("org.mule.modules.odata.tests.CityBuilding", "CityBuildings", null , null, null, null, null, null);
+	public void testGetEntities() throws Exception {
+		Object payload = this.runFlow("test-get-entities").getMessage().getPayload();
+		
+		Assert.assertTrue(payload instanceof Collection);
+		
+		@SuppressWarnings("unchecked")
+		Collection<Object> buildings = (Collection<Object>) payload;
 		
 		Assert.assertFalse("No results obtained", buildings.isEmpty());
 		
 		for (Object record : buildings) {
-			Assert.assertTrue("Expected type was People", record instanceof CityBuilding);
+			Assert.assertTrue("Expected type was CityBuilding", record instanceof CityBuilding);
 			CityBuilding building = (CityBuilding) record;
 			
 			Assert.assertFalse(StringUtils.isBlank(building.getName()));
@@ -54,4 +50,45 @@ public class GetEntitiesTest {
 		}
 	}
 	
+	
+	protected <T> MuleEvent runFlow(String flowName) throws Exception {
+		return this.runFlow(flowName, null);
+	}
+	
+	protected <T> MuleEvent runFlow(String flowName, Object payload) throws Exception {
+    	Flow flow = lookupFlowConstruct(flowName);
+    	return flow.process(getTestEvent(payload));
+    }
+	
+	/**
+    * Run the flow specified by name and assert equality on the expected output
+    *
+    * @param flowName The name of the flow to run
+    * @param expect The expected output
+    */
+    protected <T> void runFlowAndExpect(String flowName, T expect) throws Exception {
+        Assert.assertEquals(expect, this.runFlow(flowName).getMessage().getPayload());
+    }
+
+    /**
+    * Run the flow specified by name using the specified payload and assert
+    * equality on the expected output
+    *
+    * @param flowName The name of the flow to run
+    * @param expect The expected output
+    * @param payload The payload of the input event
+    */
+    protected <T, U> void runFlowWithPayloadAndExpect(String flowName, T expect, U payload) throws Exception {
+        Assert.assertEquals(expect, this.runFlow(flowName).getMessage().getPayload());
+    }
+
+    /**
+     * Retrieve a flow by name from the registry
+     *
+     * @param name Name of the flow to retrieve
+     */
+    protected Flow lookupFlowConstruct(String name) {
+        return (Flow) muleContext.getRegistry().lookupFlowConstruct(name);
+    }
+
 }
