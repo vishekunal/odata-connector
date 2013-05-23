@@ -8,12 +8,6 @@
   <classpathentry kind="con" path="MULE_RUNTIME"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
   <classpathentry kind="var" path="M2_REPO/bouncycastle/bcprov-jdk14/139/bcprov-jdk14-139.jar"/>
-  <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.6/commons-codec-1.6.jar" sourcepath="M2_REPO/commons-codec/commons-codec/1.6/commons-codec-1.6-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/commons-codec/commons-codec/1.6/commons-codec-1.6-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/mulesoft/commons/connector-commons/1.0/connector-commons-1.0.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/core4j/core4j/0.5/core4j-0.5.jar" sourcepath="M2_REPO/org/core4j/core4j/0.5/core4j-0.5-sources.jar">
     <attributes>
       <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/core4j/core4j/0.5/core4j-0.5-javadoc.jar!/" name="javadoc_location"/>
@@ -30,15 +24,6 @@
       <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/apache/ftpserver/ftpserver-core/1.0.2/ftpserver-core-1.0.2-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar" sourcepath="M2_REPO/com/google/code/gson/gson/2.2.2/gson-2.2.2-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/com/google/code/gson/gson/2.2.2/gson-2.2.2-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-core-asl/1.9.2/jackson-core-asl-1.9.2.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-core-asl/1.9.2/jackson-core-asl-1.9.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-jaxrs/1.9.2/jackson-jaxrs-1.9.2.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-jaxrs/1.9.2/jackson-jaxrs-1.9.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-mapper-asl/1.9.2/jackson-mapper-asl-1.9.2.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-mapper-asl/1.9.2/jackson-mapper-asl-1.9.2-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/jackson/jackson-xc/1.9.2/jackson-xc-1.9.2.jar" sourcepath="M2_REPO/org/codehaus/jackson/jackson-xc/1.9.2/jackson-xc-1.9.2-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/eclipse/persistence/javax.persistence/2.0.0/javax.persistence-2.0.0.jar" sourcepath="M2_REPO/org/eclipse/persistence/javax.persistence/2.0.0/javax.persistence-2.0.0-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/xml/bind/jaxb-impl/2.1.5/jaxb-impl-2.1.5.jar" sourcepath="M2_REPO/com/sun/xml/bind/jaxb-impl/2.1.5/jaxb-impl-2.1.5-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/com/sun/xml/bind/jaxb-xjc/2.2.4-1/jaxb-xjc-2.2.4-1.jar"/>
@@ -48,48 +33,18 @@
     </attributes>
   </classpathentry>
   <classpathentry kind="var" path="M2_REPO/jdom/jdom/1.0/jdom-1.0.jar" sourcepath="M2_REPO/jdom/jdom/1.0/jdom-1.0-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-client/1.16/jersey-client-1.16.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-client/1.16/jersey-client-1.16-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/com/sun/jersey/jersey-client/1.16/jersey-client-1.16-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-core/1.16/jersey-core-1.16.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-core/1.16/jersey-core-1.16-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/com/sun/jersey/jersey-core/1.16/jersey-core-1.16-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/jersey-json/1.16/jersey-json-1.16.jar" sourcepath="M2_REPO/com/sun/jersey/jersey-json/1.16/jersey-json-1.16-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/com/sun/jersey/jersey-json/1.16/jersey-json-1.16-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/com/sun/jersey/contribs/jersey-multipart/1.16/jersey-multipart-1.16.jar" sourcepath="M2_REPO/com/sun/jersey/contribs/jersey-multipart/1.16/jersey-multipart-1.16-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/com/sun/jersey/contribs/jersey-multipart/1.16/jersey-multipart-1.16-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar" sourcepath="M2_REPO/org/codehaus/jettison/jettison/1.1/jettison-1.1-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/codehaus/jettison/jettison/1.1/jettison-1.1-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
   <classpathentry kind="var" path="M2_REPO/joda-time/joda-time/2.1/joda-time-2.1.jar" sourcepath="M2_REPO/joda-time/joda-time/2.1/joda-time-2.1-sources.jar">
     <attributes>
       <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/joda-time/joda-time/2.1/joda-time-2.1-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
-  <classpathentry kind="var" path="M2_REPO/org/jvnet/mimepull/1.6/mimepull-1.6.jar" sourcepath="M2_REPO/org/jvnet/mimepull/1.6/mimepull-1.6-sources.jar">
-    <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/jvnet/mimepull/1.6/mimepull-1.6-javadoc.jar!/" name="javadoc_location"/>
-    </attributes>
-  </classpathentry>
   <classpathentry kind="var" path="M2_REPO/org/apache/mina/mina-core/2.0.0-M6/mina-core-2.0.0-M6.jar" sourcepath="M2_REPO/org/apache/mina/mina-core/2.0.0-M6/mina-core-2.0.0-M6-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/mockobjects/mockobjects-core/0.09/mockobjects-core-0.09.jar" sourcepath="M2_REPO/mockobjects/mockobjects-core/0.09/mockobjects-core-0.09-sources.jar"/>
-  <classpathentry kind="var" path="M2_REPO/org/mule/modules/mule-module-box/2.0.0-SNAPSHOT/mule-module-box-2.0.0-SNAPSHOT.jar" sourcepath="M2_REPO/org/mule/modules/mule-module-box/2.0.0-SNAPSHOT/mule-module-box-2.0.0-SNAPSHOT-sources.jar">
+  <classpathentry kind="var" path="M2_REPO/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0.jar" sourcepath="M2_REPO/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0-sources.jar">
     <attributes>
-      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/mule/modules/mule-module-box/2.0.0-SNAPSHOT/mule-module-box-2.0.0-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
+      <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/mockito/mockito-all/1.9.0/mockito-all-1.9.0-javadoc.jar!/" name="javadoc_location"/>
     </attributes>
   </classpathentry>
+  <classpathentry kind="var" path="M2_REPO/mockobjects/mockobjects-core/0.09/mockobjects-core-0.09.jar" sourcepath="M2_REPO/mockobjects/mockobjects-core/0.09/mockobjects-core-0.09-sources.jar"/>
   <classpathentry kind="var" path="M2_REPO/org/mule/modules/mule-module-odata/1.0.1-SNAPSHOT/mule-module-odata-1.0.1-SNAPSHOT.jar" sourcepath="M2_REPO/org/mule/modules/mule-module-odata/1.0.1-SNAPSHOT/mule-module-odata-1.0.1-SNAPSHOT-sources.jar">
     <attributes>
       <attribute value="jar:file:/Users/marianogonzalez/.m2/repository/org/mule/modules/mule-module-odata/1.0.1-SNAPSHOT/mule-module-odata-1.0.1-SNAPSHOT-javadoc.jar!/" name="javadoc_location"/>
