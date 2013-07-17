@@ -42,6 +42,7 @@ import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
 import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
 import org.mule.modules.odata.reflection.FieldDescriptor;
 import org.mule.modules.odata.reflection.ReflectionUtils;
+import org.mule.util.ClassUtils;
 import org.odata4j.consumer.ODataClientRequest;
 import org.odata4j.consumer.ODataConsumer;
 import org.odata4j.core.Guid;
@@ -466,7 +467,7 @@ public class ODataConnector {
 		Class<?> clazz = null;
     	
     	try {
-    		clazz = Class.forName(returnClass);
+    		clazz = ClassUtils.loadClass(returnClass, getClass());
     	} catch (ClassNotFoundException e) {
     		throw new IllegalArgumentException(String.format("return class %s not found in classpath", returnClass), e);
     	}
