@@ -29,6 +29,7 @@ import org.mule.api.annotations.Connect;
 import org.mule.api.annotations.ConnectionIdentifier;
 import org.mule.api.annotations.Connector;
 import org.mule.api.annotations.Disconnect;
+import org.mule.api.annotations.InvalidateConnectionOn;
 import org.mule.api.annotations.MetaDataSwitch;
 import org.mule.api.annotations.Processor;
 import org.mule.api.annotations.ValidateConnection;
@@ -37,6 +38,7 @@ import org.mule.api.annotations.param.ConnectionKey;
 import org.mule.api.annotations.param.Default;
 import org.mule.api.annotations.param.Optional;
 import org.mule.api.transport.PropertyScope;
+import org.mule.modules.odata.exception.NotAuthorizedException;
 import org.mule.modules.odata.factory.ODataConsumerFactory;
 import org.mule.modules.odata.factory.ODataConsumerFactoryImpl;
 import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
@@ -207,6 +209,7 @@ public class ODataConnector {
      * @return a list of objects of class "returnClass" representing the obtained entities
      */
     @Processor
+    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @SuppressWarnings("unchecked")
     public List<Object> getEntities(
     						@Default("org.odata4j.core.OEntity") @Optional String returnClass,
@@ -250,6 +253,7 @@ public class ODataConnector {
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      */
     @Processor
+    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void createEntity(MuleMessage message,
     						@Optional @Default("#[payload]") Object entity,
@@ -281,6 +285,7 @@ public class ODataConnector {
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
+    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void updateEntity(MuleMessage message,
     						@Optional @Default("#[payload]") Object entity,
@@ -321,6 +326,7 @@ public class ODataConnector {
      * @param serviceUri optional override of the service Uri for this particular call. Leave blank for defaulting to the config one
      */
     @Processor
+    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void deleteEntity(
     						MuleMessage message,
@@ -351,6 +357,7 @@ public class ODataConnector {
      * @return an instance of {@link org.odata4j.producer.resources.BatchResult}
      */
     @Processor
+    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public BatchResult batch(
     			MuleMessage message,
