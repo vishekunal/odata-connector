@@ -190,6 +190,18 @@ public class ODataConnector {
 	}
 	
 	/**
+	 * This ooperation will force the disconnection of the current session.
+	 * <p>
+	 * Next time connection manager recieves a call to an operation it will reconnect using the new credentials (if tenant info was provided)
+	 * 
+	 * {@sample.xml ../../../doc/OData-connector.xml.sample odata:force-disconnect}
+	 */
+	@Processor
+	public void forceDisconnect() {
+		disconnect();
+	}
+	
+	/**
      * Reads entities from an specified set and returns it as a list of pojos. You can optionally provide a
      * returnClass parameter which will allow you to get the result as a list of pojos (as long as that
      * class is compliant with the Bean contract). If you don't specify it, you'll get a list of generic

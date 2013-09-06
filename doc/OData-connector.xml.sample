@@ -17,3 +17,6 @@
     	<odata:delete-entity entitySetName="ProductSet" keyAttribute="id" config-ref="odata" />
     </odata:batch>
 <!-- END_INCLUDE(odata:batch) -->
+<!-- BEGIN_INCLUDE(odata:force-disconnect) -->
+    <odata:force-disconnect />
+<!-- END_INCLUDE(odata:force-disconnect) -->
