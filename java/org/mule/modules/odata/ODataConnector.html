@@ -205,15 +205,29 @@
     <li class="selected api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/package-summary.html">org.mule.modules.odata</a></li>
     <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/adapter/package-summary.html">org.mule.modules.odata.adapter</a></li>
+    <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/adapters/package-summary.html">org.mule.modules.odata.adapters</a></li>
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/agents/package-summary.html">org.mule.modules.odata.agents</a></li>
     <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/basic/package-summary.html">org.mule.modules.odata.basic</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/callback/package-summary.html">org.mule.modules.odata.callback</a></li>
+    <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/config/package-summary.html">org.mule.modules.odata.config</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/connection/package-summary.html">org.mule.modules.odata.connection</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/connectivity/package-summary.html">org.mule.modules.odata.connectivity</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/devkit/package-summary.html">org.mule.modules.odata.devkit</a></li>
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/exception/package-summary.html">org.mule.modules.odata.exception</a></li>
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/factory/package-summary.html">org.mule.modules.odata.factory</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../java/org/mule/modules/odata/oauth/package-summary.html">org.mule.modules.odata.oauth</a></li>
     <li class="api apilevel-">
   <a href="../../../../../java/org/mule/modules/odata/odata4j/extensions/package-summary.html">org.mule.modules.odata.odata4j.extensions</a></li>
     <li class="api apilevel-">
@@ -384,9 +398,6 @@ Summary:
   
 
 
-  &#124; <a href="#promethods">Protected Methods</a>
-  
-
 
   &#124; <a href="#inhmethods">Inherited Methods</a>
 
@@ -501,6 +512,8 @@ Summary:
               >
           
             
+              <a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorConnectionIdentifierAdapter.html">ODataConnectorConnectionIdentifierAdapter</a>,
+            
               <a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorLifecycleAdapter.html">ODataConnectorLifecycleAdapter</a>,
             
               <a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorMetadataAdapater.html">ODataConnectorMetadataAdapater</a>,
@@ -514,14 +527,18 @@ Summary:
               >
   <table class="jd-sumtable-expando">
         <tr class="alt-color api apilevel-" >
+              <td class="jd-linkcol"><a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorConnectionIdentifierAdapter.html">ODataConnectorConnectionIdentifierAdapter</a></td>
+              <td class="jd-descrcol" width="100%">A <code>ODataConnectorConnectionIdentifierAdapter</code> is a wrapper around <code><a href="../../../../../java/org/mule/modules/odata/ODataConnector.html">ODataConnector</a></code> that implements org.mule.devkit.dynamic.api.helper.Connection interface.&nbsp;</td>
+          </tr>
+        <tr class=" api apilevel-" >
               <td class="jd-linkcol"><a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorLifecycleAdapter.html">ODataConnectorLifecycleAdapter</a></td>
               <td class="jd-descrcol" width="100%">A <code>ODataConnectorLifecycleAdapter</code> is a wrapper around <code><a href="../../../../../java/org/mule/modules/odata/ODataConnector.html">ODataConnector</a></code> that adds lifecycle methods to the pojo.&nbsp;</td>
           </tr>
-        <tr class=" api apilevel-" >
+        <tr class="alt-color api apilevel-" >
               <td class="jd-linkcol"><a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorMetadataAdapater.html">ODataConnectorMetadataAdapater</a></td>
               <td class="jd-descrcol" width="100%">A <code>ODataConnectorMetadataAdapater</code> is a wrapper around <code><a href="../../../../../java/org/mule/modules/odata/ODataConnector.html">ODataConnector</a></code> that adds support for querying metadata about the extension.&nbsp;</td>
           </tr>
-        <tr class="alt-color api apilevel-" >
+        <tr class=" api apilevel-" >
               <td class="jd-linkcol"><a href="../../../../../java/org/mule/modules/odata/adapters/ODataConnectorProcessAdapter.html">ODataConnectorProcessAdapter</a></td>
               <td class="jd-descrcol" width="100%">A <code>ODataConnectorProcessAdapter</code> is a wrapper around <code><a href="../../../../../java/org/mule/modules/odata/ODataConnector.html">ODataConnector</a></code> that enables custom processing strategies.&nbsp;</td>
           </tr>
@@ -536,7 +553,9 @@ Summary:
 
 <h2>Class Overview</h2>
 <p>Connector for consuming OData feeds by performing read, create, update and delete operations.
- Bath operations are also supported.</p>
+ Bath operations are also supported.
+ 
+ This version of the connector does not use any kind of authentication.  </p>
 
 
 
@@ -609,7 +628,7 @@ Summary:
           
           String</nobr></td>
           <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#baseServiceUri">baseServiceUri</a></td>
-          <td class="jd-descrcol" width="100%">The OData service root uri 
+          <td class="jd-descrcol" width="100%">The url of the target OData service
 </td>
       </tr>
       
@@ -688,43 +707,20 @@ Summary:
           private
           
           
-          String</nobr></td>
-          <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#password">password</a></td>
-          <td class="jd-descrcol" width="100%">If authentication is required, please provide password
-</td>
-      </tr>
-      
-    
-      <tr class="alt-color api apilevel-" >
-          <td class="jd-typecol"><nobr>
-          private
-          
-          
           Map&lt;Class&lt;?&gt;,&nbsp;Collection&lt;<a href="../../../../../java/org/mule/modules/odata/reflection/FieldDescriptor.html">FieldDescriptor</a>&gt;&gt;</nobr></td>
           <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#propertiesCache">propertiesCache</a></td>
           <td class="jd-descrcol" width="100%"></td>
       </tr>
       
     
-      <tr class=" api apilevel-" >
-          <td class="jd-typecol"><nobr>
-          private
-          static
-          final
-          PropertyUtilsBean</nobr></td>
-          <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#propertyUtils">propertyUtils</a></td>
-          <td class="jd-descrcol" width="100%"></td>
-      </tr>
-      
-    
       <tr class="alt-color api apilevel-" >
           <td class="jd-typecol"><nobr>
           private
           
           
           String</nobr></td>
-          <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#username">username</a></td>
-          <td class="jd-descrcol" width="100%">If authentication is required, please provide username
+          <td class="jd-linkcol"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#user">user</a></td>
+          <td class="jd-descrcol" width="100%">The current usert
 </td>
       </tr>
       
@@ -783,7 +779,7 @@ Summary:
             <a href="../../../../../java/org/odata4j/producer/resources/BatchResult.html">BatchResult</a></nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#batch(org.mule.api.MuleMessage, java.lang.String, java.util.List<org.mule.api.NestedProcessor>)">batch</a></span>(MuleMessage message, String serviceUri, List&lt;NestedProcessor&gt; processors)</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#batch(org.mule.api.MuleMessage, java.util.List<org.mule.api.NestedProcessor>)">batch</a></span>(MuleMessage message, List&lt;NestedProcessor&gt; processors)</nobr>
         
         <div class="jd-descrdiv">Executes a series of insert/update/deletes in a batch grouped in one changeset.</div>
   
@@ -801,9 +797,48 @@ Summary:
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#createEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)">createEntity</a></span>(MuleMessage message, Object entity, String entitySetName, String serviceUri)</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#connect(java.lang.String, java.lang.String, java.lang.String)">connect</a></span>(String username, String password, String serviceUri)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#createEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String)">createEntity</a></span>(MuleMessage message, Object entity, String entitySetName)</nobr>
         
         <div class="jd-descrdiv">Inserts an entity from an input pojo.</div>
+  
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#deleteEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)">deleteEntity</a></span>(MuleMessage message, Object entity, String entitySetName, String keyAttribute)</nobr>
+        
+        <div class="jd-descrdiv">Deletes an entity represented by a pojo on the OData service
+ 
+ To specify the entitie's id, your pojo can rather have an attribute of type
+ <code><a href="../../../../../java/org/odata4j/core/Guid.html">Guid</a></code> or to have a string attribute annotated with <code><a href="../../../../../java/org/mule/modules/odata/annotation/Guid.html">Guid</a></code>
+ 
+ </div>
   
   </td></tr>
 
@@ -819,15 +854,8 @@ Summary:
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#deleteEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String, java.lang.String)">deleteEntity</a></span>(MuleMessage message, Object entity, String entitySetName, String keyAttribute, String serviceUri)</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#disconnect()">disconnect</a></span>()</nobr>
         
-        <div class="jd-descrdiv">Deletes an entity represented by a pojo on the OData service
- 
- To specify the entitie's id, your pojo can rather have an attribute of type
- <code><a href="../../../../../java/org/odata4j/core/Guid.html">Guid</a></code> or to have a string attribute annotated with <code><a href="../../../../../java/org/mule/modules/odata/annotation/Guid.html">Guid</a></code>
- 
- </div>
-  
   </td></tr>
 
 
@@ -839,11 +867,13 @@ Summary:
             
             
             
-            String</nobr>
+            void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#getBaseServiceUri()">getBaseServiceUri</a></span>()</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#forceDisconnect()">forceDisconnect</a></span>()</nobr>
         
+        <div class="jd-descrdiv">This ooperation will force the disconnection of the current session.</div>
+  
   </td></tr>
 
 
@@ -855,10 +885,10 @@ Summary:
             
             
             
-            <a href="../../../../../java/org/odata4j/consumer/ODataConsumer.html">ODataConsumer</a></nobr>
+            String</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#getConsumer()">getConsumer</a></span>()</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#getConnectionIdentifier()">getConnectionIdentifier</a></span>()</nobr>
         
   </td></tr>
 
@@ -953,77 +983,10 @@ Summary:
             
             
             
-            String</nobr>
+            boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#getPassword()">getPassword</a></span>()</nobr>
-        
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            String</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#getUsername()">getUsername</a></span>()</nobr>
-        
-  </td></tr>
-
-
-	 
-    <tr class="alt-color api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#init()">init</a></span>()</nobr>
-        
-        <div class="jd-descrdiv">This method initializes the module by creating the consumer and the factory (if needed)
-</div>
-  
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#setBaseServiceUri(java.lang.String)">setBaseServiceUri</a></span>(String baseServiceUri)</nobr>
-        
-  </td></tr>
-
-
-	 
-    <tr class="alt-color api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#setConsumer(org.odata4j.consumer.ODataConsumer)">setConsumer</a></span>(<a href="../../../../../java/org/odata4j/consumer/ODataConsumer.html">ODataConsumer</a> consumer)</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#isConnected()">isConnected</a></span>()</nobr>
         
   </td></tr>
 
@@ -1103,39 +1066,7 @@ Summary:
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#setPassword(java.lang.String)">setPassword</a></span>(String password)</nobr>
-        
-  </td></tr>
-
-
-	 
-    <tr class="alt-color api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#setUsername(java.lang.String)">setUsername</a></span>(String username)</nobr>
-        
-  </td></tr>
-
-
-	 
-    <tr class=" api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            void</nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#updateEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String, java.lang.String)">updateEntity</a></span>(MuleMessage message, Object entity, String entitySetName, String keyAttribute, String serviceUri)</nobr>
+        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#updateEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)">updateEntity</a></span>(MuleMessage message, Object entity, String entitySetName, String keyAttribute)</nobr>
         
         <div class="jd-descrdiv">Updates an entity represented by a pojo on the OData service
  
@@ -1151,31 +1082,6 @@ Summary:
 </table>
 
 
-
-
-<!-- ========== METHOD SUMMARY =========== -->
-<table id="promethods" class="jd-sumtable"><tr><th colspan="12">Protected Methods</th></tr>
-
-
-
-	 
-    <tr class="alt-color api apilevel-" >
-        <td class="jd-typecol"><nobr>
-            
-            
-            
-            
-            
-            <a href="../../../../../java/org/odata4j/producer/resources/BatchBodyPart.html">BatchBodyPart</a></nobr>
-        </td>
-        <td class="jd-linkcol" width="100%"><nobr>
-        <span class="sympad"><a href="../../../../../org/mule/modules/odata/ODataConnector.html#toBatchBodyPart(org.odata4j.consumer.ODataClientRequest)">toBatchBodyPart</a></span>(<a href="../../../../../java/org/odata4j/consumer/ODataClientRequest.html">ODataClientRequest</a> request)</nobr>
-        
-  </td></tr>
-
-
-
-</table>
 
 
 
@@ -1488,7 +1394,7 @@ From class
       </div>
     <div class="jd-details-descr">
       
-  <div class="jd-tagdata jd-tagdescr"><p>The OData service root uri 
+  <div class="jd-tagdata jd-tagdescr"><p>The url of the target OData service
 </p></div>
 
     
@@ -1697,37 +1603,6 @@ From class
 
 
 
-<A NAME="password"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        private 
-         
-         
-        String
-      </span>
-        password
-    </h4>
-      <div class="api-level">
-        
-
-
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p>If authentication is required, please provide password
-</p></div>
-
-    
-    </div>
-</div>
-
-
-
 <A NAME="propertiesCache"></A>
 
 <div class="jd-details api apilevel-"> 
@@ -1758,37 +1633,7 @@ From class
 
 
 
-<A NAME="propertyUtils"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        private 
-        static 
-        final 
-        PropertyUtilsBean
-      </span>
-        propertyUtils
-    </h4>
-      <div class="api-level">
-        
-
-
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-
-    
-    </div>
-</div>
-
-
-
-<A NAME="username"></A>
+<A NAME="user"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -1798,7 +1643,7 @@ From class
          
         String
       </span>
-        username
+        user
     </h4>
       <div class="api-level">
         
@@ -1810,7 +1655,7 @@ From class
       </div>
     <div class="jd-details-descr">
       
-  <div class="jd-tagdata jd-tagdescr"><p>If authentication is required, please provide username
+  <div class="jd-tagdata jd-tagdescr"><p>The current usert
 </p></div>
 
     
@@ -1874,7 +1719,7 @@ From class
 
 
 
-<A NAME="batch(org.mule.api.MuleMessage, java.lang.String, java.util.List<org.mule.api.NestedProcessor>)"></A>
+<A NAME="batch(org.mule.api.MuleMessage, java.util.List<org.mule.api.NestedProcessor>)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -1887,7 +1732,7 @@ From class
         <a href="../../../../../java/org/odata4j/producer/resources/BatchResult.html">BatchResult</a>
       </span>
       <span class="sympad">batch</span>
-      <span class="normal">(MuleMessage message, String serviceUri, List&lt;NestedProcessor&gt; processors)</span>
+      <span class="normal">(MuleMessage message, List&lt;NestedProcessor&gt; processors)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -1910,10 +1755,6 @@ From class
           <td>The current mule message</td>
         </tr>
         <tr>
-          <th>serviceUri</td>
-          <td>Optional override of the service Uri for this particular call. Leave blank for defaulting to the config one</td>
-        </tr>
-        <tr>
           <th>processors</td>
           <td>Nested processors where each individual operation is to be performed</td>
         </tr>
@@ -1929,7 +1770,64 @@ From class
 </div>
 
 
-<A NAME="createEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)"></A>
+<A NAME="connect(java.lang.String, java.lang.String, java.lang.String)"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+         
+         
+        void
+      </span>
+      <span class="sympad">connect</span>
+      <span class="normal">(String username, String password, String serviceUri)</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p></p></div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Parameters</h5>
+      <table class="jd-tagtable">
+        <tr>
+          <th>username</td>
+          <td>The authorization username</td>
+        </tr>
+        <tr>
+          <th>password</td>
+          <td>The authorization password</td>
+        </tr>
+        <tr>
+          <th>serviceUri</td>
+          <td>The URI of the target OData Service</td>
+        </tr>
+      </table>
+  </div>
+  <div class="jd-tagdata">
+      <h5 class="jd-tagtitle">Throws</h5>
+      <table class="jd-tagtable">  
+        <tr>
+            <th>ConnectionException</td>
+            <td></td>
+        </tr>
+      </table>
+  </div>
+
+    </div>
+</div>
+
+
+<A NAME="createEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -1942,7 +1840,7 @@ From class
         void
       </span>
       <span class="sympad">createEntity</span>
-      <span class="normal">(MuleMessage message, Object entity, String entitySetName, String serviceUri)</span>
+      <span class="normal">(MuleMessage message, Object entity, String entitySetName)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -1973,11 +1871,7 @@ From class
         </tr>
         <tr>
           <th>entitySetName</td>
-          <td>The name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name</td>
-        </tr>
-        <tr>
-          <th>serviceUri</td>
-          <td>Optional override of the service Uri for this particular call. Leave blank for defaulting to the config one
+          <td>The name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
 </td>
         </tr>
       </table>
@@ -1987,7 +1881,7 @@ From class
 </div>
 
 
-<A NAME="deleteEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String, java.lang.String)"></A>
+<A NAME="deleteEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2000,7 +1894,7 @@ From class
         void
       </span>
       <span class="sympad">deleteEntity</span>
-      <span class="normal">(MuleMessage message, Object entity, String entitySetName, String keyAttribute, String serviceUri)</span>
+      <span class="normal">(MuleMessage message, Object entity, String entitySetName, String keyAttribute)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -2037,11 +1931,6 @@ From class
           <th>keyAttribute</td>
           <td>The name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value</td>
         </tr>
-        <tr>
-          <th>serviceUri</td>
-          <td>Optional override of the service Uri for this particular call. Leave blank for defaulting to the config one
-</td>
-        </tr>
       </table>
   </div>
 
@@ -2049,7 +1938,7 @@ From class
 </div>
 
 
-<A NAME="getBaseServiceUri()"></A>
+<A NAME="disconnect()"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2059,9 +1948,9 @@ From class
          
          
          
-        String
+        void
       </span>
-      <span class="sympad">getBaseServiceUri</span>
+      <span class="sympad">disconnect</span>
       <span class="normal">()</span>
     </h4>
       <div class="api-level">
@@ -2080,7 +1969,7 @@ From class
 </div>
 
 
-<A NAME="getConsumer()"></A>
+<A NAME="forceDisconnect()"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2090,9 +1979,45 @@ From class
          
          
          
-        <a href="../../../../../java/org/odata4j/consumer/ODataConsumer.html">ODataConsumer</a>
+        void
       </span>
-      <span class="sympad">getConsumer</span>
+      <span class="sympad">forceDisconnect</span>
+      <span class="normal">()</span>
+    </h4>
+      <div class="api-level">
+        <div>
+
+</div>
+        
+  
+
+      </div>
+    <div class="jd-details-descr">
+      
+  <div class="jd-tagdata jd-tagdescr"><p>This ooperation will force the disconnection of the current session.
+ <p>
+ Next time connection manager recieves a call to an operation it will reconnect using the new credentials (if tenant info was provided)
+ 
+ 
+</p></div>
+
+    </div>
+</div>
+
+
+<A NAME="getConnectionIdentifier()"></A>
+
+<div class="jd-details api apilevel-"> 
+    <h4 class="jd-details-title">
+      <span class="normal">
+        public 
+         
+         
+         
+         
+        String
+      </span>
+      <span class="sympad">getConnectionIdentifier</span>
       <span class="normal">()</span>
     </h4>
       <div class="api-level">
@@ -2314,7 +2239,7 @@ From class
 </div>
 
 
-<A NAME="getPassword()"></A>
+<A NAME="isConnected()"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2324,9 +2249,9 @@ From class
          
          
          
-        String
+        boolean
       </span>
-      <span class="sympad">getPassword</span>
+      <span class="sympad">isConnected</span>
       <span class="normal">()</span>
     </h4>
       <div class="api-level">
@@ -2340,149 +2265,6 @@ From class
     <div class="jd-details-descr">
       
   <div class="jd-tagdata jd-tagdescr"><p></p></div>
-
-    </div>
-</div>
-
-
-<A NAME="getUsername()"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        String
-      </span>
-      <span class="sympad">getUsername</span>
-      <span class="normal">()</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-
-    </div>
-</div>
-
-
-<A NAME="init()"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">init</span>
-      <span class="normal">()</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p>This method initializes the module by creating the consumer and the factory (if needed)
-</p></div>
-
-    </div>
-</div>
-
-
-<A NAME="setBaseServiceUri(java.lang.String)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">setBaseServiceUri</span>
-      <span class="normal">(String baseServiceUri)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>baseServiceUri</td>
-          <td></td>
-        </tr>
-      </table>
-  </div>
-
-    </div>
-</div>
-
-
-<A NAME="setConsumer(org.odata4j.consumer.ODataConsumer)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">setConsumer</span>
-      <span class="normal">(<a href="../../../../../java/org/odata4j/consumer/ODataConsumer.html">ODataConsumer</a> consumer)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>consumer</td>
-          <td></td>
-        </tr>
-      </table>
-  </div>
 
     </div>
 </div>
@@ -2648,87 +2430,7 @@ From class
 </div>
 
 
-<A NAME="setPassword(java.lang.String)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">setPassword</span>
-      <span class="normal">(String password)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>password</td>
-          <td></td>
-        </tr>
-      </table>
-  </div>
-
-    </div>
-</div>
-
-
-<A NAME="setUsername(java.lang.String)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        public 
-         
-         
-         
-         
-        void
-      </span>
-      <span class="sympad">setUsername</span>
-      <span class="normal">(String username)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>username</td>
-          <td></td>
-        </tr>
-      </table>
-  </div>
-
-    </div>
-</div>
-
-
-<A NAME="updateEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String, java.lang.String)"></A>
+<A NAME="updateEntity(org.mule.api.MuleMessage, java.lang.Object, java.lang.String, java.lang.String)"></A>
 
 <div class="jd-details api apilevel-"> 
     <h4 class="jd-details-title">
@@ -2741,7 +2443,7 @@ From class
         void
       </span>
       <span class="sympad">updateEntity</span>
-      <span class="normal">(MuleMessage message, Object entity, String entitySetName, String keyAttribute, String serviceUri)</span>
+      <span class="normal">(MuleMessage message, Object entity, String entitySetName, String keyAttribute)</span>
     </h4>
       <div class="api-level">
         <div>
@@ -2776,11 +2478,7 @@ From class
         </tr>
         <tr>
           <th>keyAttribute</td>
-          <td>The name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value</td>
-        </tr>
-        <tr>
-          <th>serviceUri</td>
-          <td>Optional override of the service Uri for this particular call. Leave blank for defaulting to the config one
+          <td>The name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
 </td>
         </tr>
       </table>
@@ -2794,51 +2492,6 @@ From class
 
 
 <!-- ========= METHOD DETAIL ======== -->
-
-<h2>Protected Methods</h2>
-
-
-
-<A NAME="toBatchBodyPart(org.odata4j.consumer.ODataClientRequest)"></A>
-
-<div class="jd-details api apilevel-"> 
-    <h4 class="jd-details-title">
-      <span class="normal">
-        protected 
-         
-         
-         
-         
-        <a href="../../../../../java/org/odata4j/producer/resources/BatchBodyPart.html">BatchBodyPart</a>
-      </span>
-      <span class="sympad">toBatchBodyPart</span>
-      <span class="normal">(<a href="../../../../../java/org/odata4j/consumer/ODataClientRequest.html">ODataClientRequest</a> request)</span>
-    </h4>
-      <div class="api-level">
-        <div>
-
-</div>
-        
-  
-
-      </div>
-    <div class="jd-details-descr">
-      
-  <div class="jd-tagdata jd-tagdescr"><p></p></div>
-  <div class="jd-tagdata">
-      <h5 class="jd-tagtitle">Parameters</h5>
-      <table class="jd-tagtable">
-        <tr>
-          <th>request</td>
-          <td></td>
-        </tr>
-      </table>
-  </div>
-
-    </div>
-</div>
-
-
 
 
 

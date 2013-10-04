@@ -205,15 +205,29 @@
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/package-summary.html">org.mule.modules.odata</a></li>
     <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/adapter/package-summary.html">org.mule.modules.odata.adapter</a></li>
+    <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/adapters/package-summary.html">org.mule.modules.odata.adapters</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/agents/package-summary.html">org.mule.modules.odata.agents</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/basic/package-summary.html">org.mule.modules.odata.basic</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/callback/package-summary.html">org.mule.modules.odata.callback</a></li>
     <li class="selected api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/config/package-summary.html">org.mule.modules.odata.config</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/connection/package-summary.html">org.mule.modules.odata.connection</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/connectivity/package-summary.html">org.mule.modules.odata.connectivity</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/devkit/package-summary.html">org.mule.modules.odata.devkit</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/exception/package-summary.html">org.mule.modules.odata.exception</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/factory/package-summary.html">org.mule.modules.odata.factory</a></li>
+    <li class="api apilevel-">
+  <a href="../../../../../../java/org/mule/modules/odata/oauth/package-summary.html">org.mule.modules.odata.oauth</a></li>
     <li class="api apilevel-">
   <a href="../../../../../../java/org/mule/modules/odata/odata4j/extensions/package-summary.html">org.mule.modules.odata.odata4j.extensions</a></li>
     <li class="api apilevel-">
@@ -305,9 +319,11 @@
     <li><h2>Classes</h2>
       <ul>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/AbstractDefinitionParser.html">AbstractDefinitionParser</a></li>
+          <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/BasicAuthODataConnectorConfigDefinitionParser.html">BasicAuthODataConnectorConfigDefinitionParser</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/BatchDefinitionParser.html">BatchDefinitionParser</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/CreateEntityDefinitionParser.html">CreateEntityDefinitionParser</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/DeleteEntityDefinitionParser.html">DeleteEntityDefinitionParser</a></li>
+          <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/ForceDisconnectDefinitionParser.html">ForceDisconnectDefinitionParser</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/GetEntitiesDefinitionParser.html">GetEntitiesDefinitionParser</a></li>
           <li class="selected api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/ODataConnectorConfigDefinitionParser.html">ODataConnectorConfigDefinitionParser</a></li>
           <li class="api apilevel-"><a href="../../../../../../java/org/mule/modules/odata/config/OdataNamespaceHandler.html">OdataNamespaceHandler</a></li>
@@ -1003,6 +1019,38 @@ From class
             boolean</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseNoExprObjectRef(org.w3c.dom.Element, org.springframework.beans.factory.support.BeanDefinitionBuilder, java.lang.String, java.lang.String)">parseNoExprObjectRef</a></span>(Element element, BeanDefinitionBuilder builder, String elementName, String propertyName)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseNoExprObjectRefWithDefault(org.w3c.dom.Element, org.springframework.beans.factory.support.BeanDefinitionBuilder, java.lang.String, java.lang.String, java.lang.String)">parseNoExprObjectRefWithDefault</a></span>(Element element, BeanDefinitionBuilder builder, String elementName, String propertyName, String defaultValue)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            boolean</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
         <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseObjectRef(org.w3c.dom.Element, org.springframework.beans.factory.support.BeanDefinitionBuilder, java.lang.String, java.lang.String)">parseObjectRef</a></span>(Element element, BeanDefinitionBuilder builder, String elementName, String propertyName)</nobr>
         
   </td></tr>
@@ -1112,6 +1160,54 @@ From class
             
             
             
+            ManagedSet</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseSet(org.w3c.dom.Element, java.lang.String, org.mule.modules.odata.config.AbstractDefinitionParser.ParseDelegate)">parseSet</a></span>(Element element, String childElementName, <a href="../../../../../../java/org/mule/modules/odata/config/AbstractDefinitionParser.ParseDelegate.html">ParseDelegate</a> parserDelegate)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseSetAndSetProperty(org.w3c.dom.Element, org.springframework.beans.factory.support.BeanDefinitionBuilder, java.lang.String, java.lang.String, java.lang.String, org.mule.modules.odata.config.AbstractDefinitionParser.ParseDelegate)">parseSetAndSetProperty</a></span>(Element element, BeanDefinitionBuilder builder, String fieldName, String parentElementName, String childElementName, <a href="../../../../../../java/org/mule/modules/odata/config/AbstractDefinitionParser.ParseDelegate.html">ParseDelegate</a> parserDelegate)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class=" api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
+            void</nobr>
+        </td>
+        <td class="jd-linkcol" width="100%"><nobr>
+        <span class="sympad"><a href="../../../../../../org/mule/modules/odata/config/AbstractDefinitionParser.html#parseSetWithDefaultAndSetProperty(org.w3c.dom.Element, org.springframework.beans.factory.support.BeanDefinitionBuilder, java.lang.String, java.lang.String, java.lang.String, java.lang.String, org.mule.modules.odata.config.AbstractDefinitionParser.ParseDelegate)">parseSetWithDefaultAndSetProperty</a></span>(Element element, BeanDefinitionBuilder builder, String fieldName, String parentElementName, String childElementName, String defaultValue, <a href="../../../../../../java/org/mule/modules/odata/config/AbstractDefinitionParser.ParseDelegate.html">ParseDelegate</a> parserDelegate)</nobr>
+        
+  </td></tr>
+
+
+	 
+    <tr class="alt-color api apilevel-" >
+        <td class="jd-typecol"><nobr>
+            
+            
+            
+            
+            
             void</nobr>
         </td>
         <td class="jd-linkcol" width="100%"><nobr>
@@ -1121,7 +1217,7 @@ From class
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1137,7 +1233,7 @@ From class
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1153,7 +1249,7 @@ From class
 
 
 	 
-    <tr class="alt-color api apilevel-" >
+    <tr class=" api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
@@ -1169,7 +1265,7 @@ From class
 
 
 	 
-    <tr class=" api apilevel-" >
+    <tr class="alt-color api apilevel-" >
         <td class="jd-typecol"><nobr>
             
             
