@@ -159,6 +159,9 @@ public class ODataConnector {
 	 */
 	@Connect
 	public void connect(@ConnectionKey String username, @Password String password, String serviceUri) throws ConnectionException {
+		if(StringUtils.isBlank(serviceUri)){
+			throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, "", "Service Uri was not configured");
+		}
 		if (StringUtils.isBlank(username) && StringUtils.isBlank(password)) {
 			this.consumer = this.getConsumerFactory().newConsumer(serviceUri, this.getFormatType(), null, null, this.getConsumerVersion());
 			this.user = "<<anonymous>>";
@@ -169,6 +172,11 @@ public class ODataConnector {
 			this.baseServiceUri = serviceUri;
 		} else {
 			throw new ConnectionException(ConnectionExceptionCode.INCORRECT_CREDENTIALS, "", "username and password must either be both blank for anonymous access or both not blank for basic authentication");
+		}
+		try{
+			this.consumer.getEntitySets();
+		}catch(Exception ex){
+			throw new ConnectionException(ConnectionExceptionCode.UNKNOWN, "", "Unexpected error\n"+ex.getMessage(),ex.getCause());
 		}
 	}
 	
