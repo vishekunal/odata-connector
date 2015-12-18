@@ -1,10 +1,7 @@
 /**
- *
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2015 MuleSoft, Inc. The software in this package is
+ * published under the terms of the CPAL v1.0 license, a copy of which
+ * has been included with this distribution in the LICENSE.md file.
  */
 
 package org.mule.modules.odata.factory;
@@ -26,9 +23,8 @@ import org.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
 public class ODataConsumerFactoryImpl implements ODataConsumerFactory {
 
 	/**
-	 * @see org.mule.modules.odata.factory.ODataConsumerFactory#newConsumer(java.lang.String, org.odata4j.format.FormatType, java.lang.String, java.lang.String)
+	 * @see org.mule.modules.odata.factory.ODataConsumerFactory#newConsumer(String, FormatType, String, String, ODataVersion)
 	 */
-	@Override
 	public ODataConsumer newConsumer(String baseServiceUri, FormatType formatType, String username, String password, ODataVersion version) {
 		OClientBehavior auth = this.getAuthBehaviour(username, password);
 		Builder builder = ODataJerseyConsumer.newBuilder(baseServiceUri, version).setFormatType(formatType);

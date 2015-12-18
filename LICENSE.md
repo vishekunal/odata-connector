@@ -1,7 +1,12 @@
 About Community Connectors
 ==========================
 
-Community Connectors are developed by MuleSoft’s developer community. MuleSoft disclaims any support obligation for Community Connectors. For assistance with Community Connectors, please visit the connector forum (http://forums.mulesoft.com/spaces/14/anypoint-connectors.html) or contact MuleSoft Professional Services or an accredited MuleSoft Partner (https://www.mulesoft.com/partner-finder).
+Community Connectors are developed by MuleSoft’s developer community. 
+MuleSoft disclaims any support obligation for Community Connectors. 
+For assistance with Community Connectors, please visit the connector 
+forum (http://forums.mulesoft.com/spaces/14/anypoint-connectors.html) or 
+contact MuleSoft Professional Services or an accredited MuleSoft Partner 
+(https://www.mulesoft.com/partner-finder).
 
 
 Common Public Attribution License Version 1.0 (CPAL)
@@ -491,4 +496,3 @@ Covered Code. :
 Display of Attribution Information is required in Larger Works which are defined
 in the CPAL as a work which combines Covered Code or portions thereof with code
 not governed by the terms of the CPAL.
-

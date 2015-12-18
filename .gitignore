@@ -1,4 +1,12 @@
-/.classpath
-/.settings
-/.project
-target/*
+/dependency-reduced-pom.xml
+*.class
+*.iml
+# Package Files #
+*.jar
+*.war
+*.ear
+.idea
+target
+.classpath
+.project
+.settings

@@ -3,21 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mule.modules</groupId>
     <artifactId>mule-module-odata</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>mule-module</packaging>
     <name>OData Cloud Connector</name>
 
     <parent>
         <groupId>org.mule.tools.devkit</groupId>
         <artifactId>mule-devkit-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.5.3</version>
     </parent>
 
     <properties>
-        <junit.version>4.9</junit.version>
-        <mule.version>3.4.0</mule.version>
-		<mule.devkit.version>3.4.0</mule.devkit.version>
-        <mockito.version>1.8.2</mockito.version>
         <jdk.version>1.6</jdk.version>
         <category>Community</category>
         <licensePath>LICENSE.md</licensePath>
@@ -40,25 +36,21 @@
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-core</artifactId>
 			<version>${jersey.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
           <groupId>com.sun.jersey.contribs</groupId>
           <artifactId>jersey-multipart</artifactId>
           <version>${jersey.version}</version>
-			<scope>provided</scope>
       </dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>${jersey.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>

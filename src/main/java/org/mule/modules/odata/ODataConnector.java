@@ -1,10 +1,7 @@
 /**
- *
- * Copyright (c) MuleSoft, Inc.  All rights reserved.  http://www.mulesoft.com
- *
- * The software in this package is published under the terms of the CPAL v1.0
- * license, a copy of which has been included with this distribution in the
- * LICENSE.txt file.
+ * (c) 2003-2015 MuleSoft, Inc. The software in this package is
+ * published under the terms of the CPAL v1.0 license, a copy of which
+ * has been included with this distribution in the LICENSE.md file.
  */
 
 package org.mule.modules.odata;
@@ -24,15 +21,7 @@ import org.mule.api.ConnectionException;
 import org.mule.api.ConnectionExceptionCode;
 import org.mule.api.MuleMessage;
 import org.mule.api.NestedProcessor;
-import org.mule.api.annotations.Configurable;
-import org.mule.api.annotations.Connect;
-import org.mule.api.annotations.ConnectionIdentifier;
-import org.mule.api.annotations.Connector;
-import org.mule.api.annotations.Disconnect;
-import org.mule.api.annotations.InvalidateConnectionOn;
-import org.mule.api.annotations.MetaDataSwitch;
-import org.mule.api.annotations.Processor;
-import org.mule.api.annotations.ValidateConnection;
+import org.mule.api.annotations.*;
 import org.mule.api.annotations.display.Password;
 import org.mule.api.annotations.param.ConnectionKey;
 import org.mule.api.annotations.param.Default;
@@ -82,7 +71,8 @@ import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
  * @author mariano.gonzalez@mulesoft.com
  *
  */
-@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", minMuleVersion = "3.4", configElementName="config", metaData=MetaDataSwitch.OFF)
+@Connector(name = "odata", schemaVersion = "1.0", friendlyName = "OData", configElementName="config", metaData=MetaDataSwitch.OFF)
+@ReconnectOn(exceptions = NotAuthorizedException.class)
 public class ODataConnector {
 	
 	private static final Logger logger = Logger.getLogger(ODataConnector.class);
@@ -96,7 +86,7 @@ public class ODataConnector {
 	private String baseServiceUri;
 	
 	/**
-	 * The current usert
+	 * The current user
 	 */
 	private String user;
 	
@@ -107,7 +97,7 @@ public class ODataConnector {
 	 * or if you are doing test cases.
 	 * 
 	 * If this property is not specified, then an instance of
-	 * {@link org.mule.modules.odata.factory.ODataConsumerFactoryImpl.ODataConsumerFactoryImpl} is used 
+	 * {@link org.mule.modules.odata.factory.ODataConsumerFactoryImpl} is used
 	 */
 	@Configurable
 	@Optional
@@ -117,7 +107,6 @@ public class ODataConnector {
 	 * The protocol version to be used when consuming external services
 	 */
 	@Configurable
-	@Optional
 	@Default("V2")
 	private ODataVersion consumerVersion = ODataVersion.V2 ;
 	
@@ -138,7 +127,6 @@ public class ODataConnector {
 	 * Valid values are: LOWER_CAMEL_CASE and UPPER_CAMEL_CASE.
 	 */
 	@Configurable
-	@Optional
 	@Default("LOWER_CAMEL_CASE")
 	private PropertyNamingFormat namingFormat = PropertyNamingFormat.LOWER_CAMEL_CASE;
 	
@@ -147,7 +135,6 @@ public class ODataConnector {
 	 * Valid values are JSON and ATOM
 	 */
 	@Configurable
-	@Optional
 	@Default("JSON")
 	private FormatType formatType = FormatType.JSON;
 	
@@ -158,7 +145,7 @@ public class ODataConnector {
 	 * @throws ConnectionException
 	 */
 	@Connect
-	public void connect(@ConnectionKey String username, @Password String password, String serviceUri) throws ConnectionException {
+	public void connect(@Optional @ConnectionKey String username, @Optional @Password String password, String serviceUri) throws ConnectionException {
 		if(StringUtils.isBlank(serviceUri)){
 			throw new ConnectionException(ConnectionExceptionCode.UNKNOWN_HOST, "", "Service Uri was not configured");
 		}
@@ -229,10 +216,9 @@ public class ODataConnector {
      * @return a list of objects of class "returnClass" representing the obtained entities
      */
     @Processor
-    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @SuppressWarnings("unchecked")
     public List<Object> getEntities(
-    						@Default("org.odata4j.core.OEntity") @Optional String returnClass,
+    						@Default("org.odata4j.core.OEntity") String returnClass,
     						String entitySetName,
     						@Optional String filter,
     						@Optional String orderBy,
@@ -273,10 +259,9 @@ public class ODataConnector {
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      */
     @Processor
-    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void createEntity(MuleMessage message,
-    						@Optional @Default("#[payload]") Object entity,
+    						@Default("#[payload]") Object entity,
     						@Optional String entitySetName) {
     	
     	OCreateRequest<OEntity> request = this.consumer.createEntity(this.getEntitySetName(entity, entitySetName));
@@ -305,10 +290,9 @@ public class ODataConnector {
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
      */
     @Processor
-    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void updateEntity(MuleMessage message,
-    						@Optional @Default("#[payload]") Object entity,
+    						@Default("#[payload]") Object entity,
     						@Optional String entitySetName,
     						String keyAttribute) {
     	
@@ -343,14 +327,12 @@ public class ODataConnector {
      * @param entity an object representing the entity
      * @param entitySetName the name of the set. If not specified then it's inferred by adding the suffix 'Set' to the objects simple class name
      * @param keyAttribute the name of the pojo's attribute that holds the entity's key. The attribute cannot hold a null value
-     * @param serviceUri optional override of the service Uri for this particular call. Leave blank for defaulting to the config one
      */
     @Processor
-    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public void deleteEntity(
     						MuleMessage message,
-    						@Optional @Default("#[payload]") Object entity,
+    						@Default("#[payload]") Object entity,
     						@Optional String entitySetName,
     						String keyAttribute) {
     	
@@ -377,7 +359,6 @@ public class ODataConnector {
      * @return an instance of {@link org.odata4j.producer.resources.BatchResult}
      */
     @Processor
-    @InvalidateConnectionOn(exception = NotAuthorizedException.class)
     @Inject
     public BatchResult batch(
     			MuleMessage message,
