@@ -31,6 +31,7 @@ import com.sun.jersey.multipart.MultiPart;
 /**
  * 
  * @author mariano.gonzalez@mulesoft.com
+ * @author anthony.rabiaza@mulesoft.com
  *
  */
 public class ConsumerBatchRequest implements OBatchRequest {
@@ -67,13 +68,13 @@ public class ConsumerBatchRequest implements OBatchRequest {
 			StringBuilder entityBuilder = new StringBuilder()
 				.append(batchPart.getHttpMethod().name()).append(" ").append(batchPart.getUri()).append(" HTTP/1.1")
 				.append(NEW_LINE).append("Content-Type: ").append(formatType == FormatType.ATOM ? MediaType.APPLICATION_ATOM_XML : MediaType.APPLICATION_JSON)
-				.append(NEW_LINE).append("Content-Lenght: ").append(batchPart.getEntity().length())
+				.append(NEW_LINE).append("Content-Length: ").append(batchPart.getEntity().length())
 				.append(NEW_LINE).append(NEW_LINE).append(batchPart.getEntity());
 			
 			String entity = entityBuilder.toString();
 			bodyPart.setEntity(entity);
 			
-			bodyPart.getHeaders().putSingle("Content-Lenght", String.valueOf(entity.length()));
+			bodyPart.getHeaders().putSingle("Content-Length", String.valueOf(entity.length()));
 			bodyPart.getHeaders().putSingle("Content-Transfer-Encoding", "binary");
 			bodyPart.type(new MediaType("application", "http"));
 		}

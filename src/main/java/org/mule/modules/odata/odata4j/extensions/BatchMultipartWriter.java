@@ -38,6 +38,7 @@ import com.sun.jersey.multipart.impl.MultiPartWriter;
  * batch services
  * 
  * @author mariano.gonzalez@mulesoft.com
+ * @author anthony.rabiaza@mulesoft.com
  *
  */
 @Produces("multipart/*")
@@ -94,20 +95,29 @@ public class BatchMultipartWriter extends MultiPartWriter {
             headers.putSingle("Content-Type", entityMediaType);
         }
 
-        boolean isFirst = true;
+        int index   	= 0;
+        //ARA: Saving the batchid
+        String batchId = boundaryString;
+        
         // Iterate through the body parts for this message
         for (BodyPart bodyPart : entity.getBodyParts()) {
             
-        	
         	// Write the leading boundary string
-            writer.write("\r\n--");
+        	if(index!=0){
+        		writer.write("\r\n");
+        	} 
+        	if(index>=2){ //FIXME: quickfix
+        		writer.write("--");
+                writer.write(batchId);
+                writer.write("\r\n");
+                writer.write("Content-Type: "+entityMediaType.toString().substring(0, entityMediaType.toString().indexOf(";"))+"; boundary="+boundaryString);
+                writer.write("\r\n");
+                writer.write("\r\n");
+        	}
+        	
+        	writer.write("--");
             writer.write(boundaryString);
             writer.write("\r\n");
-
-            if (isFirst) {
-            	isFirst = false;
-            	boundaryString = bodyPart.getMediaType().getParameters().get("boundary");
-            }
             
             // Write the headers for this body part
             MediaType bodyMediaType = bodyPart.getMediaType();
@@ -175,12 +185,27 @@ public class BatchMultipartWriter extends MultiPartWriter {
                     bodyMediaType,
                     bodyHeaders,
                     stream);
+            
+            if(index==0){
+            	boundaryString = bodyPart.getMediaType().getParameters().get("boundary");
+            } else {
+	            // Write the ending boundary string (changeset)
+	            writer.write("\r\n--");
+	            writer.write(boundaryString);
+	            writer.write("--\r\n"); 
+	            
+	            //Generate new changeset
+	            boundaryString = "changeset_" + Guid.randomGuid().toString();
+	        }
+            
+            index++;
+            
         }
-
+        //FIXME: should be the batch
         // Write the final boundary string
         writer.write("\r\n--");
-        writer.write(boundaryString);
-        writer.write("--\r\n");
+        writer.write(batchId);
+        writer.write("--");
         writer.flush();
 	}
 	
