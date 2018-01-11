@@ -17,13 +17,13 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.core.Guid;
-import org.odata4j.format.FormatType;
-import org.odata4j.jersey.consumer.ODataJerseyClient;
-import org.odata4j.producer.resources.BatchBodyPart;
-import org.odata4j.producer.resources.BatchPartResponse;
-import org.odata4j.producer.resources.BatchResult;
+import org.mule.odata4j.consumer.ODataClientRequest;
+import org.mule.odata4j.core.Guid;
+import org.mule.odata4j.format.FormatType;
+import org.mule.odata4j.jersey.consumer.ODataJerseyClient;
+import org.mule.odata4j.producer.resources.BatchBodyPart;
+import org.mule.odata4j.producer.resources.BatchPartResponse;
+import org.mule.odata4j.producer.resources.BatchResult;
 
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.MultiPart;

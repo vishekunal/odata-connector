@@ -1,0 +1,27 @@
+/**
+ * (c) 2003-2015 MuleSoft, Inc. The software in this package is
+ * published under the terms of the CPAL v1.0 license, a copy of which
+ * has been included with this distribution in the LICENSE.md file.
+ */
+
+package org.mule.odata4j.core;
+
+/**
+ * Additional Atom information.
+ */
+public interface AtomInfo extends Titled {
+
+  /**
+   * Gets the Atom title.
+   *
+   * @return the Atom title
+   */
+  String getTitle();
+
+  /**
+   * Gets the Atom category term.
+   *
+   * @return the Atom category term
+   */
+  String getCategoryTerm();
+}

@@ -7,13 +7,13 @@
 package org.mule.modules.odata.factory;
 
 import org.apache.commons.lang.StringUtils;
-import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.consumer.behaviors.OClientBehavior;
-import org.odata4j.consumer.behaviors.OClientBehaviors;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.format.FormatType;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer;
-import org.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
+import org.mule.odata4j.consumer.ODataConsumer;
+import org.mule.odata4j.consumer.behaviors.OClientBehavior;
+import org.mule.odata4j.consumer.behaviors.OClientBehaviors;
+import org.mule.odata4j.core.ODataVersion;
+import org.mule.odata4j.format.FormatType;
+import org.mule.odata4j.jersey.consumer.ODataJerseyConsumer;
+import org.mule.odata4j.jersey.consumer.ODataJerseyConsumer.Builder;
 
 /**
  * 

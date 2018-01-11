@@ -24,8 +24,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 
-import org.odata4j.core.Guid;
-import org.odata4j.jersey.internal.StringProvider2;
+import org.mule.odata4j.core.Guid;
+import org.mule.odata4j.jersey.internal.StringProvider2;
 
 import com.sun.jersey.multipart.BodyPart;
 import com.sun.jersey.multipart.BodyPartEntity;

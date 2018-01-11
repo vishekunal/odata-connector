@@ -34,33 +34,33 @@ import org.mule.modules.odata.odata4j.extensions.OBatchRequest;
 import org.mule.modules.odata.reflection.FieldDescriptor;
 import org.mule.modules.odata.reflection.ReflectionUtils;
 import org.mule.util.ClassUtils;
-import org.odata4j.consumer.ODataClientRequest;
-import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.Guid;
-import org.odata4j.core.OCollection;
-import org.odata4j.core.OCollections;
-import org.odata4j.core.OComplexObjects;
-import org.odata4j.core.OCreateRequest;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.core.OEntity;
-import org.odata4j.core.OModifyRequest;
-import org.odata4j.core.OObject;
-import org.odata4j.core.OProperties;
-import org.odata4j.core.OProperty;
-import org.odata4j.core.OQueryRequest;
-import org.odata4j.core.OSimpleObjects;
-import org.odata4j.edm.EdmCollectionType;
-import org.odata4j.edm.EdmComplexType;
-import org.odata4j.edm.EdmProperty.CollectionKind;
-import org.odata4j.edm.EdmSimpleType;
-import org.odata4j.edm.EdmType;
-import org.odata4j.format.FormatType;
-import org.odata4j.format.FormatWriter;
-import org.odata4j.jersey.consumer.ConsumerDeleteEntityRequest;
-import org.odata4j.jersey.consumer.JerseyClientUtil;
-import org.odata4j.producer.resources.BatchBodyPart;
-import org.odata4j.producer.resources.BatchResult;
-import org.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
+import org.mule.odata4j.consumer.ODataClientRequest;
+import org.mule.odata4j.consumer.ODataConsumer;
+import org.mule.odata4j.core.Guid;
+import org.mule.odata4j.core.OCollection;
+import org.mule.odata4j.core.OCollections;
+import org.mule.odata4j.core.OComplexObjects;
+import org.mule.odata4j.core.OCreateRequest;
+import org.mule.odata4j.core.ODataVersion;
+import org.mule.odata4j.core.OEntity;
+import org.mule.odata4j.core.OModifyRequest;
+import org.mule.odata4j.core.OObject;
+import org.mule.odata4j.core.OProperties;
+import org.mule.odata4j.core.OProperty;
+import org.mule.odata4j.core.OQueryRequest;
+import org.mule.odata4j.core.OSimpleObjects;
+import org.mule.odata4j.edm.EdmCollectionType;
+import org.mule.odata4j.edm.EdmComplexType;
+import org.mule.odata4j.edm.EdmProperty.CollectionKind;
+import org.mule.odata4j.edm.EdmSimpleType;
+import org.mule.odata4j.edm.EdmType;
+import org.mule.odata4j.format.FormatType;
+import org.mule.odata4j.format.FormatWriter;
+import org.mule.odata4j.jersey.consumer.ConsumerDeleteEntityRequest;
+import org.mule.odata4j.jersey.consumer.JerseyClientUtil;
+import org.mule.odata4j.producer.resources.BatchBodyPart;
+import org.mule.odata4j.producer.resources.BatchResult;
+import org.mule.odata4j.producer.resources.ODataBatchProvider.HTTP_METHOD;
 
 /**
  * Connector for consuming OData feeds by performing read, create, update and delete operations.
@@ -92,7 +92,7 @@ public class ODataConnector {
 	
 	/**
 	 * An instance of {@link org.mule.modules.odata.factory.ODataConsumerFactory}
-	 * to intanciate the {@link org.odata4j.consumer.ODataConsumer}. Normally you don't
+	 * to intanciate the {@link ODataConsumer}. Normally you don't
 	 * need to set this unless you require some custom initialization of the consumer
 	 * or if you are doing test cases.
 	 * 
@@ -200,7 +200,7 @@ public class ODataConnector {
      * Reads entities from an specified set and returns it as a list of pojos. You can optionally provide a
      * returnClass parameter which will allow you to get the result as a list of pojos (as long as that
      * class is compliant with the Bean contract). If you don't specify it, you'll get a list of generic
-     *  ${org.odata4j.core.OEntity} objects.
+     *  ${OEntity} objects.
      *
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:get-entities}
      *
@@ -218,7 +218,7 @@ public class ODataConnector {
     @Processor
     @SuppressWarnings("unchecked")
     public List<Object> getEntities(
-    						@Default("org.odata4j.core.OEntity") String returnClass,
+    						@Default("OEntity") String returnClass,
     						String entitySetName,
     						@Optional String filter,
     						@Optional String orderBy,
@@ -250,7 +250,7 @@ public class ODataConnector {
      * Inserts an entity from an input pojo.
      * 
      * To specify the entitie's id, your pojo can rather have an attribute of type
-     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
+     * {@link Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:create-entity}
      * 
@@ -280,7 +280,7 @@ public class ODataConnector {
      * Updates an entity represented by a pojo on the OData service
      * 
      * To specify the entitie's id, your pojo can rather have an attribute of type
-     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
+     * {@link Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:update-entity}
      * 
@@ -319,7 +319,7 @@ public class ODataConnector {
      * Deletes an entity represented by a pojo on the OData service
      * 
      * To specify the entitie's id, your pojo can rather have an attribute of type
-     * {@link org.odata4j.core.Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
+     * {@link Guid} or to have a string attribute annotated with {@link org.mule.modules.odata.annotation.Guid}
      * 
      * {@sample.xml ../../../doc/OData-connector.xml.sample odata:delete-entity}
      * 
@@ -356,7 +356,7 @@ public class ODataConnector {
      * 
      * @param message the current mule message
      * @param processors nested processors where each individual operation is to be performed
-     * @return an instance of {@link org.odata4j.producer.resources.BatchResult}
+     * @return an instance of {@link BatchResult}
      */
     @Processor
     @Inject

@@ -8,9 +8,9 @@ package org.mule.modules.odata.odata4j.extensions;
 
 import java.util.List;
 
-import org.odata4j.format.FormatType;
-import org.odata4j.producer.resources.BatchBodyPart;
-import org.odata4j.producer.resources.BatchResult;
+import org.mule.odata4j.format.FormatType;
+import org.mule.odata4j.producer.resources.BatchBodyPart;
+import org.mule.odata4j.producer.resources.BatchResult;
 
 /**
  * 

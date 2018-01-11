@@ -6,9 +6,9 @@
 
 package org.mule.modules.odata.factory;
 
-import org.odata4j.consumer.ODataConsumer;
-import org.odata4j.core.ODataVersion;
-import org.odata4j.format.FormatType;
+import org.mule.odata4j.consumer.ODataConsumer;
+import org.mule.odata4j.core.ODataVersion;
+import org.mule.odata4j.format.FormatType;
 
 /**
  * 
